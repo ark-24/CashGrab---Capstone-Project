@@ -235,27 +235,31 @@ export const Sider: typeof DefaultSider = ({ render }) => {
             py: 1,
             "&.Mui-selected": {
               "&:hover": {
-                backgroundColor: "transparent",
+                backgroundColor: "#E34234",
               },
-              backgroundColor: "transparent",
+              backgroundColor: "#D2042D",
             },
             justifyContent: "center",
           }}
         >
-          <ListItemIcon
+          <ListItemIcon 
             sx={{
               justifyContent: "center",
+              marginLeft: "11px",
+              marginRight: "10px",
               minWidth: 36,
-              color: "primary.contrastText",
+              color: "#F3EC0E",
             }}
           >
             <Dashboard />
           </ListItemIcon>
           <ListItemText
-            primary={translate("dashboard.title", "Dashboard")}
+            primary={"Dashboard"}
             primaryTypographyProps={{
               noWrap: true,
+              marginLeft: "-1px",
               fontSize: "16px",
+              color: "#FFFFFF",
               fontWeight: selectedKey === "/" ? "bold" : "normal",
             }}
           />
@@ -302,6 +306,12 @@ export const Sider: typeof DefaultSider = ({ render }) => {
   );
 
   const items = renderTreeView(menuItems, selectedKey);
+
+  for(var i = 0; i < items.length; i++){
+    if (i%2 === 0){
+
+    }
+  }
 
   const renderSider = () => {
     if (render) {
@@ -391,10 +401,12 @@ export const Sider: typeof DefaultSider = ({ render }) => {
         >
           <Box
             sx={{
-              height: 64,
+              height: 95,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              bgcolor: "#FCFCFC",
+
             }}
           >
             <RenderToTitle collapsed={collapsed} />
