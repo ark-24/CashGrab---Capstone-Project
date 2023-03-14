@@ -3,8 +3,23 @@ import React from 'react'
 import ReactApexChart from 'react-apexcharts'
 import { PieChartProps } from 'interfaces/home'
 
+
+const useStyles = () => ({
+    appBar: {
+      top: "auto",
+      bottom: 0
+    },
+    typo: {
+      flexGrow: 1,
+      textAlign: "center"
+    }
+  });
+
+  
 const PieChart = ({title, value, series, colors} :  PieChartProps) => {
-  return (
+    const classes = useStyles();
+  
+    return (
     <Box
     id="chart"
     flex={1}
@@ -21,9 +36,9 @@ const PieChart = ({title, value, series, colors} :  PieChartProps) => {
     
     
     >
-        <Stack direction="column">
-            <Typography align="justify">{title}</Typography>
-            <Typography align="left" fontSize={24} color="11142d" fontWeight={700} mt = 
+        <Stack direction="column" display= "flex">
+            <Typography display="block" alignContent="left">{title}</Typography>
+            <Typography textAlign="left" fontSize={24} color="11142d" fontWeight={700} mt = 
             {1}> {value}</Typography>
         </Stack>
         <ReactApexChart options={{
