@@ -23,13 +23,17 @@ import axios, { AxiosRequestConfig } from "axios";
 import { ColorModeContextProvider } from "contexts";
 import { Title, Sider, Layout, Header } from "components/layout";
 
-import { Login} from "pages/login";
+import { Login } from "pages/login";
 
-import { Home,Transactions,
-  Stats } from "pages";
+import {
+  Home, Transactions,
+  Stats
+} from "pages";
 
- import { CredentialResponse } from "interfaces/google";
+import { CredentialResponse } from "interfaces/google";
 import { parseJwt } from "utils/parse-jwt";
+import AllTransactions from "pages/allTransactions";
+import CreateTransaction from "pages/createTransaction";
 
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
@@ -111,28 +115,28 @@ function App() {
             {
               name: "income",
               list: MuiInferencer,
-              options: {label: "Income", bgColor: "red"},
-              
-              icon: <PaidIcon  />
+              options: { label: "Income", bgColor: "red" },
+
+              icon: <PaidIcon />
               // edit: MuiInferencer,
               // show: MuiInferencer,
               // create: MuiInferencer,
               // canDelete: true,
             },
             {
-              name: "transaction",
-              list: MuiInferencer,
-              icon: <ReceiptLongIcon />
+              name: "transactions",
+              list: AllTransactions,
+              icon: <ReceiptLongIcon />,
               // edit: MuiInferencer,
               // show: MuiInferencer,
-              // create: MuiInferencer,
+              //create: CreateTransaction,
               // canDelete: true,
             },
-            {
-              name: "chart",
-              list: MuiInferencer,
-              icon: <ShowChartIcon />
-            }
+            // {
+            //   name: "chart",
+            //   list: MuiInferencer,
+            //   icon: <ShowChartIcon />
+            // }
           ]}
           Title={Title}
           Sider={Sider}

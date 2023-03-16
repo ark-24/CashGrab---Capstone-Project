@@ -178,9 +178,9 @@ export const Sider: typeof DefaultSider = ({ render }) => {
                 py: isNested ? 1.25 : 1,
                 "&.Mui-selected": {
                   "&:hover": {
-                    backgroundColor: isSelected ? "#E34234": "transparent",
+                    backgroundColor: isSelected ? "#E34234" : "transparent",
                   },
-                  backgroundColor: isSelected? "#D2042D" : "transparent",
+                  backgroundColor: isSelected ? "#D2042D" : "transparent",
                 },
                 justifyContent: "center",
                 margin: '10px auto',
@@ -205,7 +205,7 @@ export const Sider: typeof DefaultSider = ({ render }) => {
                   fontSize: "16px",
                   fontWeight: isSelected ? "bold" : "normal",
                   color: isSelected ? "#fff" : '808191',
-                  marginLeft : '10px'
+                  marginLeft: '10px'
                 }}
               />
             </ListItemButton>
@@ -216,6 +216,9 @@ export const Sider: typeof DefaultSider = ({ render }) => {
   };
 
   const dashboard = hasDashboard ? (
+
+
+
     <CanAccess resource="dashboard" action="list">
       <Tooltip
         title={translate("dashboard.title", "Dashboard")}
@@ -242,13 +245,13 @@ export const Sider: typeof DefaultSider = ({ render }) => {
             justifyContent: "center",
           }}
         >
-          <ListItemIcon 
+          <ListItemIcon
             sx={{
               justifyContent: "center",
               marginLeft: "11px",
               marginRight: "10px",
               minWidth: 36,
-              color: "#F3EC0E",
+              color: selectedKey === "/" ? "#ffffff" : "#808191",
             }}
           >
             <Dashboard />
@@ -259,8 +262,15 @@ export const Sider: typeof DefaultSider = ({ render }) => {
               noWrap: true,
               marginLeft: "-1px",
               fontSize: "16px",
-              color: "#FFFFFF",
-              fontWeight: selectedKey === "/" ? "bold" : "normal",
+              color: selectedKey === "/" ? "#ffffff" : "#808191",
+              fontWeight: selectedKey === "/" ? 700 : "normal",
+            }}
+            sx={{
+              fontFamily: " Montserrat",
+              color: selectedKey === "/" ? "#ffffff" : "#808191",
+              fontWeight: selectedKey === "/" ? 700 : "normal",
+
+
             }}
           />
         </ListItemButton>
@@ -278,12 +288,13 @@ export const Sider: typeof DefaultSider = ({ render }) => {
       <ListItemButton
         key="logout"
         onClick={() => mutateLogout()}
-        sx={{ justifyContent: "center",
-              margin: '10px auto',
-              borderRadius: '12px',
-              minHeight: '56px',
-              width: '90%',
-      }}
+        sx={{
+          justifyContent: "center",
+          margin: '10px auto',
+          borderRadius: '12px',
+          minHeight: '56px',
+          width: '90%',
+        }}
       >
         <ListItemIcon
           sx={{
@@ -307,8 +318,8 @@ export const Sider: typeof DefaultSider = ({ render }) => {
 
   const items = renderTreeView(menuItems, selectedKey);
 
-  for(var i = 0; i < items.length; i++){
-    if (i%2 === 0){
+  for (var i = 0; i < items.length; i++) {
+    if (i % 2 === 0) {
 
     }
   }
@@ -369,7 +380,7 @@ export const Sider: typeof DefaultSider = ({ render }) => {
             display: { sm: "block", md: "none" },
             "& .MuiDrawer-paper": {
               width: 256,
-              bgcolor: "FCFCFC",
+              bgcolor: "#FCFCFC",
             },
           }}
         >
@@ -428,8 +439,8 @@ export const Sider: typeof DefaultSider = ({ render }) => {
               borderRadius: 0,
               borderTop: "1px solid #ffffff1a",
               '&:hover': {
-                background:"#E34234"
-                
+                background: "#E34234"
+
               }
             }}
             fullWidth
@@ -452,7 +463,7 @@ export const Sider: typeof DefaultSider = ({ render }) => {
           }}
         >
           <IconButton
-            sx={{ color: "#fff", width: "36px" }}
+            sx={{ color: "#D2042D", width: "36px" }}
             onClick={() => setOpened((prev) => !prev)}
           >
             <MenuRounded />
