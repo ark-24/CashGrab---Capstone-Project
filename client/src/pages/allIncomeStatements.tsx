@@ -1,17 +1,12 @@
-import React from 'react'
-import { Add } from '@mui/icons-material'
-import { useTable } from '@pankod/refine-core'
-
-import { Dialog } from '@mui/material';
-import { Box, Button, DataGrid, DialogActions, DialogContent, DialogContentText, DialogTitle, GridColDef, GridValueGetterParams, Stack, TextField, Typography } from '@pankod/refine-mui';
-import { useNavigate } from '@pankod/refine-react-router-v6';
-
+import { Add } from '@mui/icons-material';
+import { useTable } from '@pankod/refine-core';
+import { Box, DataGrid, GridColDef, Stack, Typography } from '@pankod/refine-mui';
 import { CustomButton } from 'components';
-import CreateTransaction from './createTransaction';
+import React, { useState } from 'react'
+import CreateIncomeStatement from './createIncomeStatement';
 
-const AllTransactions = () => {
-
-    const [open, setOpen] = React.useState(false);
+const AllIncomeStatements = () => {
+    const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -23,48 +18,57 @@ const AllTransactions = () => {
 
     const { tableQueryResult: { data, isLoading, isError } } = useTable();
 
-    const allTransactions = data?.data ?? [];
+    // const allTransactions = data?.data ?? [];
 
-    console.log(allTransactions);
+    // console.log(allTransactions);
 
 
-    //if (isLoading) return <Typography>Loading ...</Typography>
-    //if (isError) return <Typography>Error ...</Typography>
+    // if (isLoading) return <Typography>Loading ...</Typography>
+    // if (isError) return <Typography>Error ...</Typography>
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', width: 90 },
         {
-            field: 'item',
-            headerName: 'Item',
+            field: 'type',
+            headerName: 'Type',
             width: 150,
             editable: true,
         },
         {
-            field: 'price',
-            headerName: 'Price',
+            field: 'fiveDollarBills',
+            headerName: '$5 Bills',
             width: 150,
             editable: true,
         },
         {
-            field: 'moneyDeposited',
-            headerName: 'Money Deposited',
+            field: 'tenDollarBills',
+            headerName: '$10 Bills',
             type: 'number',
             width: 210,
             editable: true,
         },
         {
-            field: 'customerEmail',
-            headerName: 'Customer Email',
+            field: 'twentyDollarBills',
+            headerName: '$20 Bills',
             type: 'string',
             width: 210,
             editable: true,
         },
         {
-            field: 'details',
-            headerName: 'Information',
+            field: 'fiftyDollarBills',
+            headerName: '$50 Bills',
             type: 'string',
             width: 210,
             editable: true,
+        },
+        {
+            field: 'hundredDollarBills',
+            headerName: '$10 Bills',
+            description: 'This column has a value getter and is not sortable.',
+            sortable: false,
+            width: 200,
+            // valueGetter: (params: GridValueGetterParams) =>
+            //     `${params.row.firstName || ''} ${params.row.lastName || ''}`,
         },
         {
             field: 'date',
@@ -82,30 +86,29 @@ const AllTransactions = () => {
     return (
         <Box>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography fontSize={25} fontWeight={700} color="#11142d"> Transactions</Typography>
+                <Typography fontSize={25} fontWeight={700} color="#11142d"> Income </Typography>
 
                 <Box sx={{ justifyContent: "end" }}>
-                    <CustomButton title="Add Transaction" handleClick={handleClickOpen} backgroundColor="#D2042D"
+                    <CustomButton title="Deposit" handleClick={handleClickOpen} backgroundColor="#D2042D"
                         color="#F3EC0E" icon={<Add />} />
                 </Box>
             </Stack>
-            <CreateTransaction isOpen={open} onClose={handleClose} />
+            <CreateIncomeStatement isOpen={open} onClose={handleClose} />
 
 
             <Box mt="20px" sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, height: '500px' }}>
 
-                <DataGrid
+                {/* <DataGrid
                     getRowId={(row) => row._id}
                     rows={allTransactions}
                     columns={columns}
                     sx={{
                         backgroundColor: "#ffffff"
                     }}
-                />
+                /> */}
             </Box>
         </Box>
     )
 }
 
-export default AllTransactions
-//navigate('/transactions/create')
+export default AllIncomeStatements

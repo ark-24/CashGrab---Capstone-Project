@@ -5,13 +5,13 @@ import { FieldValues, useForm } from '@pankod/refine-react-hook-form';
 import { Email } from '@mui/icons-material';
 import { CustomButton } from 'components';
 
-interface CreateDialogProps {
+interface CreateIncomeDialogProps {
     isOpen: boolean,
     onClose: () => void
 }
 
 
-const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
+const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
 
 
     const { data: user } = useGetIdentity();
@@ -19,16 +19,17 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
 
 
     const onFinishHandler = async (data: FieldValues) => {
+        console.log(data);
         try {
             await onFinish({
                 ...data,
-                moneyDeposited: 5,
-                customerEmail: user?.email,
-                email: user?.email
+                total: (5 * data.fiveDollarBills + 10 * data.tenDollarBills + 20 * data.twentyDollarBills + 50 * data.fiftyDollarBills + 100 * data.hundredDollarBills),
+                user: user,
+                type: 'deposit'
 
 
             });
-            onClose(); // close dialog on success
+            onClose();
             reset();
         } catch (error) {
             console.log(error);
@@ -45,39 +46,18 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
                             Enter Transaction Details
                         </DialogContentText>
 
-                        <Select
-                            variant='outlined'
-                            sx={{
-                                marginTop: "20px",
-                            }}
-                            id="item"
-                            label="Item"
-                            fullWidth
-                            color="info"
-                            displayEmpty
-                            {...register('item', {
-                                required: false
-                            })}
-                        >
-                            <MenuItem value="Item 1">Item 1</MenuItem>
-                            <MenuItem value="Item 2">Item 2</MenuItem>
-                            <MenuItem value="Item 3">Item 3</MenuItem>
-
-                        </Select>
-
-
                         <TextField
                             sx={{
                                 marginTop: "20px",
                             }}
                             autoFocus
                             margin="dense"
-                            id="price"
-                            label="Price"
+                            id="fivedollars"
+                            label="$5 Bills"
                             type="number"
                             fullWidth
                             variant="standard"
-                            {...register('price', {
+                            {...register('fiveDollarBills', {
                                 required: false
                             })}
                         />
@@ -87,13 +67,61 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
                                 marginTop: "20px",
                             }}
                             autoFocus
-                            id="info"
-                            placeholder="Extra Information"
-                            label="Details"
-                            multiline
+                            margin="dense"
+                            id="tendollars"
+                            label="$10 Bills"
+                            type="number"
                             fullWidth
-                            maxRows={3}
-                            {...register('details', {
+                            variant="standard"
+                            {...register('tenDollarBills', {
+                                required: false
+                            })}
+                        />
+
+                        <TextField
+                            sx={{
+                                marginTop: "20px",
+                            }}
+                            autoFocus
+                            margin="dense"
+                            id="twentydollars"
+                            label="$20 Bills"
+                            type="number"
+                            fullWidth
+                            variant="standard"
+                            {...register('twentyDollarBills', {
+                                required: false
+                            })}
+                        />
+
+                        <TextField
+                            sx={{
+                                marginTop: "20px",
+                            }}
+                            autoFocus
+                            margin="dense"
+                            id="fiftydollars"
+                            label="$50 Bills"
+                            type="number"
+                            fullWidth
+                            variant="standard"
+                            {...register('fiftyDollarBills', {
+                                required: false
+                            })}
+                        />
+
+                        <TextField
+                            sx={{
+                                marginTop: "20px",
+                            }}
+                            autoFocus
+                            margin="dense"
+                            id="hundreddollars"
+                            label="$100 Bills"
+                            type="number"
+                            fullWidth
+                            variant="standard"
+                            {...register('hundredDollarBills', {
                                 required: false
                             })}
                         />
@@ -112,4 +140,4 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
 
 }
 // onClick={onFinishHandler}
-export default CreateTransaction
+export default CreateIncomeStatement

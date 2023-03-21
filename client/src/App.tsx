@@ -34,6 +34,7 @@ import { CredentialResponse } from "interfaces/google";
 import { parseJwt } from "utils/parse-jwt";
 import AllTransactions from "pages/allTransactions";
 import CreateTransaction from "pages/createTransaction";
+import AllIncomeStatements from "pages/allIncomeStatements";
 
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
@@ -62,6 +63,7 @@ function App() {
           body: JSON.stringify({
             name: profileObj.name,
             email: profileObj.email,
+            avatar: profileObj.picture,
           })
         })
 
@@ -71,7 +73,7 @@ function App() {
             "user",
             JSON.stringify({
               ...profileObj,
-              //avatar: profileObj.picture,
+              avatar: profileObj.picture,
               userid: data._id
             })
           );
@@ -130,7 +132,7 @@ function App() {
           resources={[
             {
               name: "income",
-              list: MuiInferencer,
+              list: AllIncomeStatements,
               options: { label: "Income", bgColor: "red" },
 
               icon: <PaidIcon />

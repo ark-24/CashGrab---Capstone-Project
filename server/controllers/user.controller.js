@@ -5,7 +5,7 @@ const getAllUsers = async (req,res) => {};
 const createUser = async (req,res) => {
 
     try {
-        const { name, email} = req.body
+        const { name, email,avatar} = req.body
 
         const userExists = await User.findOne({email});
 
@@ -14,11 +14,12 @@ const createUser = async (req,res) => {
         const newUser = await User.create({
             name, 
             email,
+            avatar
         })
 
         res.status(200).json(newUser);
     } catch (error) {
-        res.stats(500).json({message: error.message})
+        res.status(500).json({message: error.message})
     }
     
 };

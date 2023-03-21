@@ -9,6 +9,8 @@ const IncomeSchema = new mongoose.Schema({
     hundredDollarBills: {type: Number, required: false},
     total: {type: Number, required: false},
     type:{type: String, required: true},
+    date: {type: Date, required: true},
+
 })
 
 const incomeModel = mongoose.model('Income', IncomeSchema);

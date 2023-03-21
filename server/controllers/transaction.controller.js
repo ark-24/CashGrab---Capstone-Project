@@ -4,7 +4,16 @@ import User from '../mongodb/models/user.js';
 
 import mongoose from "mongoose";
 
-const getAllTransactions = async(req,res) =>{};
+const getAllTransactions = async(req,res) =>{
+    try {
+        const transactions = await Transaction.find({}).limit(req.query._end);
+        res.status(200).json(transactions);
+
+        } catch (error) {
+        res.status(500).json({message: error.message})
+        
+    }
+};
 const getTransactionDetail = async(req,res) =>{};
 
 
@@ -19,7 +28,7 @@ const createTransaction = async (req,res) =>{
 
          const session = await mongoose.startSession();
 
-        session.startTransaction();
+        session.startTransaction(); //ensures atomic
 
         const user = await User.findOne({customerEmail}).session(session);
         if(!user) throw new Error('User not found')
