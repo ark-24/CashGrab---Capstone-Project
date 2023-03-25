@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, MenuItem, Select, Stack, TextField, Typography } from '@pankod/refine-mui';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@pankod/refine-mui';
 import { useGetIdentity } from '@pankod/refine-core';
 import { FieldValues, useForm } from '@pankod/refine-react-hook-form';
 import { Email } from '@mui/icons-material';
@@ -22,10 +22,14 @@ const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => 
         console.log(data);
         try {
             await onFinish({
-                ...data,
-                total: (5 * data.fiveDollarBills + 10 * data.tenDollarBills + 20 * data.twentyDollarBills + 50 * data.fiftyDollarBills + 100 * data.hundredDollarBills),
+                fiveDollarBills: Number(data.fiveDollarBills),
+                tenDollarBills: Number(data.tenDollarBills),
+                twentyDollarBills: Number(data.twentyDollarBills),
+                fiftyDollarBills: Number(data.fiftyDollarBills),
+                hundredDollarBills: Number(data.hundredDollarBills),
+                transactionTotal: (5 * data.fiveDollarBills + 10 * data.tenDollarBills + 20 * data.twentyDollarBills + 50 * data.fiftyDollarBills + 100 * data.hundredDollarBills),
                 user: user,
-                type: 'deposit'
+                type: data.type
 
 
             });
@@ -45,6 +49,24 @@ const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => 
                         <DialogContentText>
                             Enter Transaction Details
                         </DialogContentText>
+                        <InputLabel sx={{ marginTop: "20px" }}>Type</InputLabel>
+                        <Select
+                            sx={{
+                                marginTop: "5px",
+                            }}
+                            id="type"
+                            label="Type"
+                            fullWidth
+                            color="info"
+                            displayEmpty
+                            {...register('type', {
+                                required: true
+                            })}
+                        >
+                            <MenuItem value="Deposit">Deposit</MenuItem>
+                            <MenuItem value="Withdrawal">Withdrawal</MenuItem>
+
+                        </Select>
 
                         <TextField
                             sx={{
@@ -56,6 +78,7 @@ const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => 
                             label="$5 Bills"
                             type="number"
                             fullWidth
+                            defaultValue={0}
                             variant="standard"
                             {...register('fiveDollarBills', {
                                 required: false
@@ -72,6 +95,7 @@ const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => 
                             label="$10 Bills"
                             type="number"
                             fullWidth
+                            defaultValue={0}
                             variant="standard"
                             {...register('tenDollarBills', {
                                 required: false
@@ -88,6 +112,7 @@ const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => 
                             label="$20 Bills"
                             type="number"
                             fullWidth
+                            defaultValue={0}
                             variant="standard"
                             {...register('twentyDollarBills', {
                                 required: false
@@ -104,6 +129,7 @@ const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => 
                             label="$50 Bills"
                             type="number"
                             fullWidth
+                            defaultValue={0}
                             variant="standard"
                             {...register('fiftyDollarBills', {
                                 required: false
@@ -120,6 +146,7 @@ const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => 
                             label="$100 Bills"
                             type="number"
                             fullWidth
+                            defaultValue={0}
                             variant="standard"
                             {...register('hundredDollarBills', {
                                 required: false

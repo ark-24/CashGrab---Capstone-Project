@@ -7,7 +7,8 @@ const IncomeSchema = new mongoose.Schema({
     twentyDollarBills: {type: Number, required: false},
     fiftyDollarBills: {type: Number, required: false},
     hundredDollarBills: {type: Number, required: false},
-    total: {type: Number, required: false},
+    transactionTotal: {type: Number, required: false},
+    //cashBalance: {type: Number, required: false},
     type:{type: String, required: true},
     date: {type: Date, required: true},
 

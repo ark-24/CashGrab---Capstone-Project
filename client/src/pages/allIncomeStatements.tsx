@@ -2,7 +2,7 @@ import { Add } from '@mui/icons-material';
 import { useTable } from '@pankod/refine-core';
 import { Box, DataGrid, GridColDef, Stack, Typography } from '@pankod/refine-mui';
 import { CustomButton } from 'components';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CreateIncomeStatement from './createIncomeStatement';
 
 const AllIncomeStatements = () => {
@@ -18,57 +18,85 @@ const AllIncomeStatements = () => {
 
     const { tableQueryResult: { data, isLoading, isError } } = useTable();
 
-    // const allTransactions = data?.data ?? [];
+    const allIncomeStatements = data?.data ?? [];
 
-    // console.log(allTransactions);
+    console.log(allIncomeStatements);
 
 
-    // if (isLoading) return <Typography>Loading ...</Typography>
-    // if (isError) return <Typography>Error ...</Typography>
+
+    if (isLoading) return <Typography>Loading ...</Typography>
+    if (isError) return <Typography>Error ...</Typography>
 
     const columns: GridColDef[] = [
-        { field: 'id', headerName: 'ID', width: 90 },
+        //{ field: 'id', headerName: 'ID', width: 90 },
         {
             field: 'type',
             headerName: 'Type',
             width: 150,
             editable: true,
+            headerAlign: 'center',
+            align: 'center',
         },
         {
             field: 'fiveDollarBills',
             headerName: '$5 Bills',
             width: 150,
             editable: true,
+            headerAlign: 'center',
+            align: 'center',
+
+
         },
         {
             field: 'tenDollarBills',
             headerName: '$10 Bills',
             type: 'number',
-            width: 210,
+            width: 150,
             editable: true,
+            headerAlign: 'center',
+            align: 'center',
+
+
         },
         {
             field: 'twentyDollarBills',
             headerName: '$20 Bills',
             type: 'string',
-            width: 210,
+            width: 150,
             editable: true,
+            headerAlign: 'center',
+            align: 'center',
+
+
         },
         {
             field: 'fiftyDollarBills',
             headerName: '$50 Bills',
             type: 'string',
-            width: 210,
+            width: 120,
             editable: true,
+            headerAlign: 'center',
+            align: 'center',
+
+
         },
         {
             field: 'hundredDollarBills',
             headerName: '$10 Bills',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            width: 200,
-            // valueGetter: (params: GridValueGetterParams) =>
-            //     `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+            width: 150,
+            headerAlign: 'center',
+            align: 'center',
+        },
+        {
+            field: 'total',
+            headerName: 'Total Amount',
+            description: 'This column has a value getter and is not sortable.',
+            sortable: false,
+            width: 150,
+            headerAlign: 'center',
+            align: 'center',
         },
         {
             field: 'date',
@@ -76,6 +104,10 @@ const AllIncomeStatements = () => {
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
             width: 200,
+            headerAlign: 'center',
+            align: 'center',
+
+
             // valueGetter: (params: GridValueGetterParams) =>
             //     `${params.row.firstName || ''} ${params.row.lastName || ''}`,
         },
@@ -89,7 +121,7 @@ const AllIncomeStatements = () => {
                 <Typography fontSize={25} fontWeight={700} color="#11142d"> Income </Typography>
 
                 <Box sx={{ justifyContent: "end" }}>
-                    <CustomButton title="Deposit" handleClick={handleClickOpen} backgroundColor="#D2042D"
+                    <CustomButton title="Transfer" handleClick={handleClickOpen} backgroundColor="#D2042D"
                         color="#F3EC0E" icon={<Add />} />
                 </Box>
             </Stack>
@@ -98,14 +130,14 @@ const AllIncomeStatements = () => {
 
             <Box mt="20px" sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, height: '500px' }}>
 
-                {/* <DataGrid
+                <DataGrid
                     getRowId={(row) => row._id}
-                    rows={allTransactions}
+                    rows={allIncomeStatements}
                     columns={columns}
                     sx={{
                         backgroundColor: "#ffffff"
                     }}
-                /> */}
+                />
             </Box>
         </Box>
     )

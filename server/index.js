@@ -4,6 +4,7 @@ import cors from 'cors';
 
 import connectDb from "./mongodb/connect.js";
 import userRouter from './routes/user.routes.js';
+import billRouter from './routes/bill.routes.js';
 import transactionRouter from './routes/transaction.routes.js';
 import incomeRouter from './routes/income.routes.js';
 import bodyParser from 'body-parser'
@@ -19,6 +20,8 @@ app.use('/api/v1/users', userRouter);
 
 app.use('/api/v1/transactions', transactionRouter);
 app.use('/api/v1/income', incomeRouter);
+app.use('/api/v1/bills', billRouter);
+
 
 
 
