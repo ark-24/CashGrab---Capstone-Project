@@ -8,10 +8,13 @@ import billRouter from './routes/bill.routes.js';
 import transactionRouter from './routes/transaction.routes.js';
 import incomeRouter from './routes/income.routes.js';
 import bodyParser from 'body-parser'
+import {Server} from "socket.io";
+
 
 dotenv.config();
 
 const app = express();
+import http from "http";
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -22,7 +25,15 @@ app.use('/api/v1/transactions', transactionRouter);
 app.use('/api/v1/income', incomeRouter);
 app.use('/api/v1/bills', billRouter);
 
+const server = http.createServer(app);
 
+const io = new Server(server,{
+
+    cors:{
+        origin:"http://localhost:3000",
+        methods: ["GET", "POST","PUT"]
+    }
+})
 
 
 
@@ -30,11 +41,20 @@ app.get('/', (req,res)=>{
     res.send({message: 'Hello World'});
 })
 
+io.on('connection', (socket) => {
+    console.log('Socket connected:', socket.id);
+  
+    socket.on('Data', (data) => {
+      // Handle the image data received from the Raspberry Pi here
+      console.log('Image data received:', data);
+    });
+  });
+
 
 const startServer = async () => {
     try{
         connectDb(process.env.MONGODB_URL);
-        app.listen(8080, ()=>{
+        server.listen(8080, ()=>{
             console.log("server listening on port 8080")
         })
     } catch(error) {
@@ -42,5 +62,6 @@ const startServer = async () => {
     }
 
 }
+
 
 startServer();

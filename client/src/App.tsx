@@ -11,6 +11,7 @@ import {
   color,
   bgcolor,
 } from "@pankod/refine-mui";
+import io from 'socket.io-client';
 
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import PaidIcon from '@mui/icons-material/Paid';
@@ -49,6 +50,8 @@ axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
 
   return request;
 });
+
+const socket = io('http://<raspberry-pi-ip-address>:<port>');
 
 function App() {
   const authProvider: AuthProvider = {
