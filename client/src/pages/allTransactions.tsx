@@ -32,18 +32,21 @@ const AllTransactions = () => {
     //if (isError) return <Typography>Error ...</Typography>
 
     const columns: GridColDef[] = [
-        { field: 'id', headerName: 'ID', width: 90 },
         {
             field: 'item',
             headerName: 'Item',
             width: 150,
             editable: true,
+            headerAlign: 'center',
+            align: 'center',
         },
         {
             field: 'price',
             headerName: 'Price',
             width: 150,
             editable: true,
+            headerAlign: 'center',
+            align: 'center',
         },
         {
             field: 'moneyDeposited',
@@ -51,6 +54,8 @@ const AllTransactions = () => {
             type: 'number',
             width: 210,
             editable: true,
+            headerAlign: 'center',
+            align: 'center',
         },
         {
             field: 'customerEmail',
@@ -58,6 +63,8 @@ const AllTransactions = () => {
             type: 'string',
             width: 210,
             editable: true,
+            headerAlign: 'center',
+            align: 'center',
         },
         {
             field: 'details',
@@ -65,6 +72,8 @@ const AllTransactions = () => {
             type: 'string',
             width: 210,
             editable: true,
+            headerAlign: 'center',
+            align: 'center',
         },
         {
             field: 'date',
@@ -72,6 +81,8 @@ const AllTransactions = () => {
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
             width: 200,
+            headerAlign: 'center',
+            align: 'center',
             // valueGetter: (params: GridValueGetterParams) =>
             //     `${params.row.firstName || ''} ${params.row.lastName || ''}`,
         },

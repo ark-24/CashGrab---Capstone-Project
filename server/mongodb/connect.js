@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-const connectDb = (url) => {
+const connectDb = async (url) => {
     mongoose.set('strictQuery', true);
 
-    mongoose.connect(url)
+    await mongoose.connect(url)
     .then(() => console.log('MongoDB connected'))
     .catch((error) => console.log(error));
 }

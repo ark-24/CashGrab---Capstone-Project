@@ -13,10 +13,8 @@ const Home = () => {
       <Box mt="20px" display="flex" flexWrap="wrap" gap={4}>
 
         <PieChart
-          title="Bill Denominations"
-          value={15}
-          series={[20, 20, 20, 20, 20]}
-          colors={["#e82042", "#115DA8", "#85bb65", "#B76EB8", "#D0AC11"]} />
+          title="Number of Bills "
+          colors={["#115DA8", "#B76EB8", "#85bb65", "#e82042", "#D0AC11"]} />
       </Box>
 
       <Stack mt="25px" width="100%" direction={{ xs: 'column', lg: 'row' }} >
