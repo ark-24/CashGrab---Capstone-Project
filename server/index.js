@@ -44,9 +44,10 @@ app.get('/', (req,res)=>{
 io.on('connection', (socket) => {
     console.log('Socket connected:', socket.id);
   
-    socket.on('Data', (data) => {
+    socket.on('result', (data) => {
       // Handle the image data received from the Raspberry Pi here
       console.log('Image data received:', data);
+      io.emit("result", "hehe");
     });
   });
 
@@ -54,7 +55,7 @@ io.on('connection', (socket) => {
 const startServer = async () => {
     try{
         connectDb(process.env.MONGODB_URL);
-        server.listen(8080, ()=>{
+        server.listen(8080,()=>{//, '192.168.1.129'
             console.log("server listening on port 8080")
         })
     } catch(error) {
