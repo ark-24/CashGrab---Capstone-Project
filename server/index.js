@@ -47,7 +47,7 @@ io.on('connection', (socket) => {
     socket.on('result', (data) => {
       // Handle the image data received from the Raspberry Pi here
       console.log('Image data received:', data);
-      io.emit("result", "hehe");
+      io.emit("result", data);
     });
   });
 

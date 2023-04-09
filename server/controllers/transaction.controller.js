@@ -14,6 +14,19 @@ const getAllTransactions = async(req,res) =>{
         
     }
 };
+
+const getRecentTransaction = async(req,res) =>{
+    try {
+        const transaction = await Transaction.findOne({}).sort({ date: -1 }).exec();
+        console.log(transaction);
+        res.status(200).json(transaction);
+
+        } catch (error) {
+        res.status(500).json({message: error.message})
+        
+    }
+};
+
 const getTransactionDetail = async(req,res) =>{};
 
 
@@ -66,4 +79,5 @@ export{
     createTransaction,
     updateTransaction,
     deleteTransaction,
+    getRecentTransaction,
 }

@@ -1,10 +1,11 @@
 import express from 'express';
 
-import { getAllTransactions, getTransactionDetail, createTransaction,deleteTransaction,updateTransaction } from '../controllers/transaction.controller.js';
+import { getAllTransactions, getTransactionDetail, createTransaction,deleteTransaction,updateTransaction,getRecentTransaction } from '../controllers/transaction.controller.js';
 
 const router = express.Router();
 
 router.route('/').get(getAllTransactions);
+router.route('/recent').get(getRecentTransaction);
 router.route('/:id').get(getTransactionDetail);
 router.route('/').post(createTransaction);
 router.route('/:id').patch(updateTransaction);

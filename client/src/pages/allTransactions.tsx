@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Add } from '@mui/icons-material'
+import { Add, CheckCircleOutlineRounded } from '@mui/icons-material'
 import { useTable } from '@pankod/refine-core'
 
 import { Dialog } from '@mui/material';
@@ -16,14 +16,37 @@ const socket = io("http://localhost:8080");
 
 const AllTransactions = () => {
 
-    const [isOpenDepositAlert, setIsOpenDepositAlert] = useState<boolean>(false);
+    const [isOpenDepositAlert, setIsOpenDepositAlert] = useState(false);
+    const [depositAmount, setDepositAmount] = useState(0);
+    const [recentPrice, setRecentPrice] = useState(0);
+
+
+    const getRecentTransaction = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/v1/transactions/recent`);
+            const data = await response.json();
+            //setBills(JSON.stringify(data));
+            console.log(data);
+            setRecentPrice(data.price);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     useEffect(() => {
-        socket.on("result", () => {
-            console.log(`data received in front end: `)
+        socket.on("result", async (data) => {
+            console.log(`data received in front end: ${data} `)
+            setIsOpenDepositAlert(true)
+            setDepositAmount(data);
+            const recentTransaction = await getRecentTransaction();
+            console.log(recentTransaction);
+
+
         });
-        setIsOpenDepositAlert(true)
-    }, [socket]);
+    }, []);
+    useEffect(() => {
+        console.log(`alert value  ${isOpenDepositAlert} `)
+    }, [isOpenDepositAlert]);
 
     const [open, setOpen] = React.useState(false);
 
@@ -34,12 +57,13 @@ const AllTransactions = () => {
     const handleClose = () => {
         setOpen(false);
     };
+    getRecentTransaction();
+
 
     const { tableQueryResult: { data, isLoading, isError } } = useTable();
 
     const allTransactions = data?.data ?? [];
 
-    console.log(allTransactions);
 
 
     //if (isLoading) return <Typography>Loading ...</Typography>
@@ -102,9 +126,9 @@ const AllTransactions = () => {
         },
     ];
     const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
+        // if (reason === 'clickaway') {
+        //     return;
+        // }
 
         setIsOpenDepositAlert(false);
     };
@@ -113,12 +137,29 @@ const AllTransactions = () => {
 
     return (
         <>
-            <Snackbar
+            <Dialog
                 open={isOpenDepositAlert}
-                autoHideDuration={6000}
-                onClose={handleToastClose}
-                message="Note archived"
-            />
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+
+            >
+                <DialogTitle >
+                    <CheckCircleOutlineRounded style={{ color: 'green' }} />
+                    {`   Money Deposited Successfully: $${depositAmount}`}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        You owe {recentPrice - depositAmount}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleToastClose}>Disagree</Button>
+                    <Button onClick={handleToastClose} autoFocus>
+                        Agree
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             <Box>
 
@@ -136,6 +177,11 @@ const AllTransactions = () => {
                 <Box mt="20px" sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, height: '500px' }}>
 
                     <DataGrid
+                        initialState={{
+                            sorting: {
+                                sortModel: [{ field: 'date', sort: 'desc' }],
+                            },
+                        }}
                         getRowId={(row) => row._id}
                         rows={allTransactions}
                         columns={columns}
