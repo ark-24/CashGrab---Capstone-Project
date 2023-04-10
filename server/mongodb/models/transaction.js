@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const TransactionSchema = new mongoose.Schema({
-    moneyDeposited: {type: Number, required: false},
+    moneyDeposited: {type: Array, required: false},
     item: {type: String, required: false},
     details: {type: String, required: false},
     price: {type: Number, required: false},

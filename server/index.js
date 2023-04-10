@@ -49,7 +49,16 @@ io.on('connection', (socket) => {
       console.log('Image data received:', data);
       io.emit("result", data);
     });
+    
+  socket.on('json', (data) => {
+    // Handle the image data received from the Raspberry Pi here
+    console.log('transaction data received:', data);
+    io.emit("json", data);
   });
+  });
+
+
+//   socket.emit("result",{state:1, cost:data.price})
 
 
 const startServer = async () => {

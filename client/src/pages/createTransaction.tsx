@@ -4,11 +4,14 @@ import { useGetIdentity } from '@pankod/refine-core';
 import { FieldValues, useForm } from '@pankod/refine-react-hook-form';
 import { Email } from '@mui/icons-material';
 import { CustomButton } from 'components';
+import { io } from 'socket.io-client';
 
 interface CreateDialogProps {
     isOpen: boolean,
     onClose: () => void
 }
+
+const socket = io("http://localhost:8080");
 
 
 const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
@@ -22,7 +25,6 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
         try {
             await onFinish({
                 ...data,
-                moneyDeposited: 5,
                 customerEmail: user?.email,
                 email: user?.email
 
@@ -33,6 +35,8 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
         } catch (error) {
             console.log(error);
         }
+        const Cost = parseInt(data.price);
+        socket.emit("json",`'{'state':1, 'cost':${Cost}}'`)
     };
     return (
         <>

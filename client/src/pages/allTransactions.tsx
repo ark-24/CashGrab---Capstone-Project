@@ -9,6 +9,18 @@ import { useNavigate } from '@pankod/refine-react-router-v6';
 import { CustomButton } from 'components';
 import CreateTransaction from './createTransaction';
 import io from "socket.io-client";
+// import transactionModel from './././server/mongodb/models/transaction.js';
+
+interface Transaction {
+    moneyDeposited: number[] , 
+    item: string,
+    details: string,
+    price: number,
+    creator: string, //{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    _id: string,
+    customerEmail: string,
+    date: Date,
+}
 
 const socket = io("http://localhost:8080");
 
@@ -18,35 +30,49 @@ const AllTransactions = () => {
 
     const [isOpenDepositAlert, setIsOpenDepositAlert] = useState(false);
     const [depositAmount, setDepositAmount] = useState(0);
-    const [recentPrice, setRecentPrice] = useState(0);
+    const [recentTransaction, setRecentTransaction] = useState<Transaction | null>();
 
 
     const getRecentTransaction = async () => {
         try {
             const response = await fetch(`http://localhost:8080/api/v1/transactions/recent`);
-            const data = await response.json();
-            //setBills(JSON.stringify(data));
-            console.log(data);
-            setRecentPrice(data.price);
+            if (response.ok) {
+                const data = await response.json();
+                setRecentTransaction(data);
+                if(recentTransaction){
+                    console.log("depositvalue before " + depositAmount)
+                const updateData = recentTransaction ? { moneyDeposited: [...recentTransaction.moneyDeposited , depositAmount] ,id: recentTransaction._id} : undefined;
+                fetch(`http://localhost:8080/api/v1/transactions/recent/${recentTransaction?._id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Item updated:', data);
+                })
+                .catch(error => {
+                    console.error('Error updating item:', error);
+                });
+            }
+        }
         } catch (error) {
             console.error(error);
         }
     };
-
+  
     useEffect(() => {
         socket.on("result", async (data) => {
-            console.log(`data received in front end: ${data} `)
-            setIsOpenDepositAlert(true)
-            setDepositAmount(data);
-            const recentTransaction = await getRecentTransaction();
-            console.log(recentTransaction);
+          console.log(`data received in front end: ${data} `)
+          setDepositAmount(data.inserted);
+          console.log("data obj " + JSON.stringify(data))
 
-
+          console.log("inserted " + depositAmount)
+         getRecentTransaction();
+          setIsOpenDepositAlert(true)
         });
-    }, []);
-    useEffect(() => {
-        console.log(`alert value  ${isOpenDepositAlert} `)
-    }, [isOpenDepositAlert]);
+      }, [socket]);
+      
 
     const [open, setOpen] = React.useState(false);
 
@@ -57,7 +83,6 @@ const AllTransactions = () => {
     const handleClose = () => {
         setOpen(false);
     };
-    getRecentTransaction();
 
 
     const { tableQueryResult: { data, isLoading, isError } } = useTable();
@@ -66,9 +91,10 @@ const AllTransactions = () => {
 
 
 
+
     //if (isLoading) return <Typography>Loading ...</Typography>
     //if (isError) return <Typography>Error ...</Typography>
-
+  
     const columns: GridColDef[] = [
         {
             field: 'item',
@@ -89,11 +115,15 @@ const AllTransactions = () => {
         {
             field: 'moneyDeposited',
             headerName: 'Money Deposited',
-            type: 'number',
             width: 210,
             editable: true,
             headerAlign: 'center',
             align: 'center',
+            valueGetter: (params: GridValueGetterParams) => {
+                //const moneyDeposited = params.getValue('moneyDeposited', field: 'moneyDeposited',) as number[];
+                //const total = moneyDeposited.reduce((acc, curr) => acc + curr, 0);
+                return `${Object.values(params.row)[1].reduce((acc: any, curr: any) => acc + curr, 0)}`;
+            }
         },
         {
             field: 'customerEmail',
@@ -150,7 +180,8 @@ const AllTransactions = () => {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        You owe {recentPrice - depositAmount}
+                        {recentTransaction?.price &&recentTransaction?.moneyDeposited && recentTransaction?.price > recentTransaction?.moneyDeposited.reduce((acc: number, curr: number) => acc + curr, 0) ? `You owe ${recentTransaction?.price - depositAmount}` : 'All good'}
+
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -182,7 +213,7 @@ const AllTransactions = () => {
                                 sortModel: [{ field: 'date', sort: 'desc' }],
                             },
                         }}
-                        getRowId={(row) => row._id}
+                        getRowId={(row: any) => row._id}
                         rows={allTransactions}
                         columns={columns}
                         sx={{
