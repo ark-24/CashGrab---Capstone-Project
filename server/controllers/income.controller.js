@@ -31,8 +31,6 @@ const createIncomeStatement = async(req,res) =>{
 
         session.startTransaction(); //ensures atomic
 
-        
-
         const theUser = await User.findOne({user}).session(session);
         if(!user) throw new Error('User not found')
 

@@ -69,36 +69,33 @@ const createTransaction = async (req,res) =>{
     }
 
 };
-const updateTransaction = async(req,res) =>{
-
-
+const updateTransaction = async (req, res) => {
     try {
-
-    const {moneyDeposited, id} = req.body;
-    console.log(req.body)
-
-    
-    // const session = await mongoose.startSession();
-
-    // session.startTransaction(); //ensures atomic
-
-    // const transaction = await Transaction.findOne({id}).session(session);
-    // if(!transaction) throw new Error('Transaction not found');
-
-    await Transaction.findByIdAndUpdate(id, {
-        moneyDeposited
-    })
-    
-    res.status(200).json({message: 'Transaction updated successfully'})
-
-
-    
+      const { moneyDeposited, id } = req.body;
+  
+      if (!id) {
+        throw new Error('Missing transaction ID');
+      }
+  
+      if (!moneyDeposited || !Array.isArray(moneyDeposited)) {
+        throw new Error('Invalid moneyDeposited value');
+      }
+  
+      const updatedTransaction = await Transaction.findByIdAndUpdate(
+        id,
+        { moneyDeposited },
+        { new: true } // return the updated document
+      );
+  
+      if (!updatedTransaction) {
+        throw new Error('Transaction not found');
+      }
+  
+      res.json({ message: 'Transaction updated successfully', transaction: updatedTransaction });
     } catch (error) {
-        res.status(500).json({message: error.message})
-    
+      res.status(500).json({ message: error.message });
     }
-
-};
+  };
 const deleteTransaction = async(req,res) =>{};
 
 

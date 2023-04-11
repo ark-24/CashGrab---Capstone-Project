@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Add, CheckCircleOutlineRounded } from '@mui/icons-material'
-import { useTable } from '@pankod/refine-core'
+import { useGetIdentity, useTable } from '@pankod/refine-core'
 
 import { Dialog } from '@mui/material';
 import { Box, Button, DataGrid, DialogActions, DialogContent, DialogContentText, DialogTitle, GridColDef, GridValueGetterParams, Snackbar, Stack, TextField, Typography } from '@pankod/refine-mui';
@@ -24,57 +24,134 @@ interface Transaction {
 
 const socket = io("http://localhost:8080");
 
+// async function getAllTransaction() {
+//     try {
+//         const response = await fetch(`http://localhost:8080/api/v1/bills/`);
+//         const data = await response.json();
+//         //console.log(data);
+//         return data;
+//       } catch (error) {
+//         console.error(error);
+//       }
+    
+// }
+
 
 
 const AllTransactions = () => {
+    const { tableQueryResult: { data, isLoading, isError } } = useTable({
+        
+        hasPagination: false,
+    });
+    // const data = await getAllTransaction();
+
+const { data: user } =  useGetIdentity();
+   
+
 
     const [isOpenDepositAlert, setIsOpenDepositAlert] = useState(false);
     const [depositAmount, setDepositAmount] = useState(0);
     const [recentTransaction, setRecentTransaction] = useState<Transaction | null>();
 
+    const [IsLoading, setIsLoading] = useState(false);
 
-    const getRecentTransaction = async () => {
-        try {
-            const response = await fetch(`http://localhost:8080/api/v1/transactions/recent`);
-            if (response.ok) {
-                const data = await response.json();
-                setRecentTransaction(data);
-                if(recentTransaction){
-                    console.log("depositvalue before " + depositAmount)
-                const updateData = recentTransaction ? { moneyDeposited: [...recentTransaction.moneyDeposited , depositAmount] ,id: recentTransaction._id} : undefined;
-                fetch(`http://localhost:8080/api/v1/transactions/recent/${recentTransaction?._id}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updateData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Item updated:', data);
-                })
-                .catch(error => {
-                    console.error('Error updating item:', error);
-                });
-            }
-        }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-  
-    useEffect(() => {
-        socket.on("result", async (data) => {
-          console.log(`data received in front end: ${data} `)
-          setDepositAmount(data.inserted);
-          console.log("data obj " + JSON.stringify(data))
-
-          console.log("inserted " + depositAmount)
-         getRecentTransaction();
-          setIsOpenDepositAlert(true)
-        });
-      }, [socket]);
-      
 
     const [open, setOpen] = React.useState(false);
+    async function getRecentTransaction () {
+        const response = await fetch(`http://localhost:8080/api/v1/transactions/recent`);
+        if (response.ok) {
+          const data = await response.json();
+          setRecentTransaction(data);
+          console.log(JSON.stringify(data))
+          return data;
+        }
+      }
+      async function handleIncomeDeposit (depositAmt: number) {
+        console.log("depositAmt in handleIncome" + depositAmt)
+        const createData = {
+            fiveDollarBills: depositAmt === 5 ? 1 : 0,
+            tenDollarBills: depositAmt === 10 ? 1 : 0,
+            twentyDollarBills: depositAmt === 20 ? 1 : 0,
+            fiftyDollarBills: depositAmt === 50 ? 1 : 0,
+            hundredDollarBills: depositAmt === 100 ? 1 : 0,
+            transactionTotal: depositAmt,
+            user: user,
+            type: "Deposit"
+        }
+        try {
+            
+        
+        const response = await fetch(`http://localhost:8080/api/v1/income`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(createData)
+          });
+        if (response.ok) {
+          const data = await response.json();
+          console.log(JSON.stringify(data))
+          return data;
+        }
+        } catch (error) {
+        console.error('Error creating Income Statement:', error);
+            }
+      }
+      
+      const setRecentDeposit = async (depositAmt: number) => {
+        try {
+          setIsLoading(true);
+          const myTransaction = await getRecentTransaction();
+          if (myTransaction !== null && myTransaction !== undefined ) {
+
+            console.log("depositvalue before " + depositAmt)
+            const amountDeposited = myTransaction.moneyDeposited;
+            const newAmountDeposited = [...amountDeposited, depositAmt];
+            const updateData = { moneyDeposited: newAmountDeposited, id: myTransaction._id };
+            console.log("update " + JSON.stringify(updateData))
+            const patchResponse = await fetch(`http://localhost:8080/api/v1/transactions/recent/${myTransaction?._id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(updateData)
+            });
+            if (patchResponse.ok) {
+              const patchData = await patchResponse.json();
+              console.log('Item updated:', patchData);
+              await getRecentTransaction(); // update recentTransaction state after the patch request
+            } else {
+              console.error('Error updating item:', patchResponse.status);
+            }
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        } finally {
+          setIsLoading(false);
+          setIsOpenDepositAlert(true);
+        }
+      };
+      
+      async function handleResult(data: any) {
+        console.log(`data received in front end: ${data} `)
+        setDepositAmount(data.inserted);
+        console.log("data obj " + JSON.stringify(data))
+        console.log("inserted " + depositAmount)
+        await setRecentDeposit(data.inserted);
+        await handleIncomeDeposit(data.inserted);
+      }
+      
+      useEffect(() => {
+        socket.on("result", handleResult);
+      
+        return () => {
+          socket.off("result", handleResult);
+        };
+      }, [handleResult,socket]);
+      
+      
+
+if (IsLoading) {
+  return <div>Loading...</div>;
+}
+
+
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -85,7 +162,6 @@ const AllTransactions = () => {
     };
 
 
-    const { tableQueryResult: { data, isLoading, isError } } = useTable();
 
     const allTransactions = data?.data ?? [];
 
@@ -161,6 +237,8 @@ const AllTransactions = () => {
         // }
 
         setIsOpenDepositAlert(false);
+        // window.location.reload()
+
     };
 
 
@@ -180,15 +258,13 @@ const AllTransactions = () => {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        {recentTransaction?.price &&recentTransaction?.moneyDeposited && recentTransaction?.price > recentTransaction?.moneyDeposited.reduce((acc: number, curr: number) => acc + curr, 0) ? `You owe ${recentTransaction?.price - depositAmount}` : 'All good'}
+                        {recentTransaction && recentTransaction?.price &&recentTransaction?.moneyDeposited && recentTransaction?.price > recentTransaction?.moneyDeposited.reduce((acc: number, curr: number) => acc + curr, 0) ? `You owe ${recentTransaction?.price - recentTransaction?.moneyDeposited.reduce((acc: number, curr: number) => acc + curr, 0)}` : 'Thank You! No outstanding balance remaining.'}
 
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleToastClose}>Disagree</Button>
-                    <Button onClick={handleToastClose} autoFocus>
-                        Agree
-                    </Button>
+                    <Button onClick={handleToastClose}>OK</Button>
+                   
                 </DialogActions>
             </Dialog>
 

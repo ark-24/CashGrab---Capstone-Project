@@ -25,7 +25,6 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
         try {
             await onFinish({
                 ...data,
-                customerEmail: user?.email,
                 email: user?.email
 
 
@@ -82,6 +81,22 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
                             fullWidth
                             variant="standard"
                             {...register('price', {
+                                required: false
+                            })}
+                        />
+
+                        
+                        <TextField
+                            sx={{
+                                marginTop: "20px",
+                            }}
+                            autoFocus
+                            margin="dense"
+                            id="customerEmail"
+                            label="Customer Email"
+                            fullWidth
+                            variant="standard"
+                            {...register('customerEmail', {
                                 required: false
                             })}
                         />
