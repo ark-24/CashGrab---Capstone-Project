@@ -175,7 +175,7 @@ const AllTransactions = () => {
         {
             field: 'item',
             headerName: 'Item',
-            width: 150,
+            width: 225,
             editable: true,
             headerAlign: 'center',
             align: 'center',
@@ -183,7 +183,7 @@ const AllTransactions = () => {
         {
             field: 'price',
             headerName: 'Price',
-            width: 150,
+            width: 225,
             editable: true,
             headerAlign: 'center',
             align: 'center',
@@ -191,7 +191,7 @@ const AllTransactions = () => {
         {
             field: 'moneyDeposited',
             headerName: 'Money Deposited',
-            width: 210,
+            width: 225,
             editable: true,
             headerAlign: 'center',
             align: 'center',
@@ -205,7 +205,7 @@ const AllTransactions = () => {
             field: 'customerEmail',
             headerName: 'Customer Email',
             type: 'string',
-            width: 210,
+            width: 225,
             editable: true,
             headerAlign: 'center',
             align: 'center',
@@ -214,7 +214,7 @@ const AllTransactions = () => {
             field: 'details',
             headerName: 'Information',
             type: 'string',
-            width: 210,
+            width: 225,
             editable: true,
             headerAlign: 'center',
             align: 'center',
@@ -224,7 +224,7 @@ const AllTransactions = () => {
             headerName: 'Date',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            width: 200,
+            width: 250,
             headerAlign: 'center',
             align: 'center',
             // valueGetter: (params: GridValueGetterParams) =>
