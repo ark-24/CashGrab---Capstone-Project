@@ -35,7 +35,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
             console.log(error);
         }
         const Cost = parseInt(data.price);
-        socket.emit("json",`'{'state':1, 'cost':${Cost}}'`)
+        socket.emit("json", `{"state":1, "cost":${Cost}}`)
     };
     return (
         <>
@@ -85,7 +85,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
                             })}
                         />
 
-                        
+
                         <TextField
                             sx={{
                                 marginTop: "20px",

@@ -12,7 +12,7 @@ import io from "socket.io-client";
 // import transactionModel from './././server/mongodb/models/transaction.js';
 
 interface Transaction {
-    moneyDeposited: number[] , 
+    moneyDeposited: number[],
     item: string,
     details: string,
     price: number,
@@ -33,20 +33,20 @@ const socket = io("http://localhost:8080");
 //       } catch (error) {
 //         console.error(error);
 //       }
-    
+
 // }
 
 
 
 const AllTransactions = () => {
     const { tableQueryResult: { data, isLoading, isError } } = useTable({
-        
+
         hasPagination: false,
     });
     // const data = await getAllTransaction();
 
-const { data: user } =  useGetIdentity();
-   
+    const { data: user } = useGetIdentity();
+
 
 
     const [isOpenDepositAlert, setIsOpenDepositAlert] = useState(false);
@@ -57,16 +57,16 @@ const { data: user } =  useGetIdentity();
 
 
     const [open, setOpen] = React.useState(false);
-    async function getRecentTransaction () {
+    async function getRecentTransaction() {
         const response = await fetch(`http://localhost:8080/api/v1/transactions/recent`);
         if (response.ok) {
-          const data = await response.json();
-          setRecentTransaction(data);
-          console.log(JSON.stringify(data))
-          return data;
+            const data = await response.json();
+            setRecentTransaction(data);
+            console.log(JSON.stringify(data))
+            return data;
         }
-      }
-      async function handleIncomeDeposit (depositAmt: number) {
+    }
+    async function handleIncomeDeposit(depositAmt: number) {
         console.log("depositAmt in handleIncome" + depositAmt)
         const createData = {
             fiveDollarBills: depositAmt === 5 ? 1 : 0,
@@ -79,77 +79,77 @@ const { data: user } =  useGetIdentity();
             type: "Deposit"
         }
         try {
-            
-        
-        const response = await fetch(`http://localhost:8080/api/v1/income`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(createData)
-          });
-        if (response.ok) {
-          const data = await response.json();
-          console.log(JSON.stringify(data))
-          return data;
-        }
-        } catch (error) {
-        console.error('Error creating Income Statement:', error);
-            }
-      }
-      
-      const setRecentDeposit = async (depositAmt: number) => {
-        try {
-          setIsLoading(true);
-          const myTransaction = await getRecentTransaction();
-          if (myTransaction !== null && myTransaction !== undefined ) {
 
-            console.log("depositvalue before " + depositAmt)
-            const amountDeposited = myTransaction.moneyDeposited;
-            const newAmountDeposited = [...amountDeposited, depositAmt];
-            const updateData = { moneyDeposited: newAmountDeposited, id: myTransaction._id };
-            console.log("update " + JSON.stringify(updateData))
-            const patchResponse = await fetch(`http://localhost:8080/api/v1/transactions/recent/${myTransaction?._id}`, {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(updateData)
+
+            const response = await fetch(`http://localhost:8080/api/v1/income`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(createData)
             });
-            if (patchResponse.ok) {
-              const patchData = await patchResponse.json();
-              console.log('Item updated:', patchData);
-              await getRecentTransaction(); // update recentTransaction state after the patch request
-            } else {
-              console.error('Error updating item:', patchResponse.status);
+            if (response.ok) {
+                const data = await response.json();
+                console.log(JSON.stringify(data))
+                return data;
             }
-          }
         } catch (error) {
-          console.error('Error:', error);
-        } finally {
-          setIsLoading(false);
-          setIsOpenDepositAlert(true);
+            console.error('Error creating Income Statement:', error);
         }
-      };
-      
-      async function handleResult(data: any) {
+    }
+
+    const setRecentDeposit = async (depositAmt: number) => {
+        try {
+            setIsLoading(true);
+            const myTransaction = await getRecentTransaction();
+            if (myTransaction !== null && myTransaction !== undefined) {
+
+                console.log("depositvalue before " + depositAmt)
+                const amountDeposited = myTransaction.moneyDeposited;
+                const newAmountDeposited = [...amountDeposited, depositAmt];
+                const updateData = { moneyDeposited: newAmountDeposited, id: myTransaction._id };
+                console.log("update " + JSON.stringify(updateData))
+                const patchResponse = await fetch(`http://localhost:8080/api/v1/transactions/recent/${myTransaction?._id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+                if (patchResponse.ok) {
+                    const patchData = await patchResponse.json();
+                    console.log('Item updated:', patchData);
+                    await getRecentTransaction(); // update recentTransaction state after the patch request
+                } else {
+                    console.error('Error updating item:', patchResponse.status);
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            setIsLoading(false);
+            setIsOpenDepositAlert(true);
+        }
+    };
+
+    async function handleResult(data: any) {
         console.log(`data received in front end: ${data} `)
         setDepositAmount(data.inserted);
         console.log("data obj " + JSON.stringify(data))
         console.log("inserted " + depositAmount)
         await setRecentDeposit(data.inserted);
         await handleIncomeDeposit(data.inserted);
-      }
-      
-      useEffect(() => {
-        socket.on("result", handleResult);
-      
-        return () => {
-          socket.off("result", handleResult);
-        };
-      }, [handleResult,socket]);
-      
-      
+    }
 
-if (IsLoading) {
-  return <div>Loading...</div>;
-}
+    useEffect(() => {
+        socket.on("result", handleResult);
+
+        return () => {
+            socket.off("result", handleResult);
+        };
+    }, [handleResult, socket]);
+
+
+
+    if (IsLoading) {
+        return <div>Loading...</div>;
+    }
 
 
 
@@ -170,7 +170,7 @@ if (IsLoading) {
 
     //if (isLoading) return <Typography>Loading ...</Typography>
     //if (isError) return <Typography>Error ...</Typography>
-  
+
     const columns: GridColDef[] = [
         {
             field: 'item',
@@ -237,7 +237,7 @@ if (IsLoading) {
         // }
 
         setIsOpenDepositAlert(false);
-        // window.location.reload()
+        window.location.reload()
 
     };
 
@@ -258,13 +258,13 @@ if (IsLoading) {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        {recentTransaction && recentTransaction?.price &&recentTransaction?.moneyDeposited && recentTransaction?.price > recentTransaction?.moneyDeposited.reduce((acc: number, curr: number) => acc + curr, 0) ? `You owe ${recentTransaction?.price - recentTransaction?.moneyDeposited.reduce((acc: number, curr: number) => acc + curr, 0)}` : 'Thank You! No outstanding balance remaining.'}
+                        {recentTransaction && recentTransaction?.price && recentTransaction?.moneyDeposited && recentTransaction?.price > recentTransaction?.moneyDeposited.reduce((acc: number, curr: number) => acc + curr, 0) ? `You owe ${recentTransaction?.price - recentTransaction?.moneyDeposited.reduce((acc: number, curr: number) => acc + curr, 0)}` : 'Thank You! No outstanding balance remaining.'}
 
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleToastClose}>OK</Button>
-                   
+
                 </DialogActions>
             </Dialog>
 
