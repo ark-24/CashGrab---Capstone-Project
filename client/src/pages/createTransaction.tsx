@@ -30,7 +30,10 @@ const socket = io("http://localhost:8080");
 
 const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
   const { data: user } = useGetIdentity();
-  const [price, setPrice] = useState<any>();
+  const [price, setPrice] = useState<Number>();
+  const [selectedItem, setSelectedItem] = useState<any>();
+  const [priceLabel, setPriceLabel] = useState<String>("Price");
+
   useEffect(() => {
     // ...
 
@@ -38,6 +41,21 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
       setPrice(0); // Reset the price when the dialog is closed
     };
   }, []);
+
+  useEffect(() => {
+    // ...
+    if (selectedItem) {
+      console.log(selectedItem);
+
+      // setPrice(selectedItem.price)
+      setPrice(parseFloat(selectedItem?.price));
+    }
+  }, [selectedItem]);
+
+  useEffect(() => {
+    console.log("price is " + price);
+  }, [price]);
+
   const {
     refineCore: { onFinish, formLoading },
     register,
@@ -66,6 +84,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
       await onFinish({
         ...data,
         email: user?.email,
+        price: price,
       });
       onClose(); // close dialog on success
       reset();
@@ -97,17 +116,14 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
                 required: false,
               })}
               onChange={(e) => {
-                const selectedItem = itemData?.find(
-                  (item) => item.itemName === e.target.value
-                );
+                const selectedValue = e.target.value;
+                const selectedItem = itemData?.find((item) => item.itemName === selectedValue);
                 if (selectedItem) {
-                  const itemPrice = selectedItem.price;
-                  setPrice(itemPrice); // Set the value of "price" field using setValue from react-hook-form
+                  setSelectedItem(selectedItem);
+                  setPrice(parseFloat(selectedItem.price));
                 }
-             else {
-                setPrice(0); // Reset the price when no item is selected
-              }
               }}
+              
             >
               {itemData?.map((name: any) => (
                 <MenuItem key={name._id} value={name.itemName}>
@@ -122,7 +138,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               }}
               autoFocus
               id="price"
-              label="Price"
+              label={priceLabel}
               type="number"
               fullWidth
               value={price}
@@ -130,6 +146,9 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               {...register("price", {
                 required: false,
               })}
+              // onChange={(e) => {
+              //   setPriceLabel(" ")
+              // }}
             />
 
             <TextField

@@ -50,6 +50,8 @@ const AllTransactions = () => {
 
   const [isOpenDepositAlert, setIsOpenDepositAlert] = useState(false);
   const [depositAmount, setDepositAmount] = useState(0);
+  const [image, setImage] = useState<Buffer>();
+
   const [recentTransaction, setRecentTransaction] =
     useState<Transaction | null>();
 
@@ -63,7 +65,7 @@ const AllTransactions = () => {
     if (response.ok) {
       const data = await response.json();
       setRecentTransaction(data);
-      console.log(JSON.stringify(data));
+      // console.log(JSON.stringify(data));
       return data;
     }
   }
@@ -141,13 +143,31 @@ const AllTransactions = () => {
     await handleIncomeDeposit(data.inserted);
   }
 
+
+  async function handleImage(data: any) {
+    console.log(`handle image in front end: ${data} `);
+    //const imageBuffer = Buffer.from(data, 'base64');
+    console.log(data)
+    setImage(data)
+  }
+
+
+
+
   useEffect(() => {
     socket.on("result", handleResult);
-
     return () => {
       socket.off("result", handleResult);
     };
   }, [handleResult, socket]);
+
+  useEffect(() => {
+    socket.on("image", handleImage);
+
+    return () => {
+      socket.off("image", handleImage);
+    };
+  }, [handleImage, socket]);
 
   if (IsLoading) {
     return <div>Loading...</div>;
@@ -227,15 +247,14 @@ const AllTransactions = () => {
       width: 250,
       headerAlign: "center",
       align: "center",
-      valueGetter: (params: GridValueGetterParams) => {
-        //const moneyDeposited = params.getValue('moneyDeposited', field: 'moneyDeposited',) as number[];
-        const rowValues = Object?.values(params.row) as any[];
-        console.log(rowValues);
-        const newValue = rowValues[7];
-        const indexOfT = newValue.indexOf("T");
+      // valueGetter: (params: GridValueGetterParams) => {
+      //   //const moneyDeposited = params.getValue('moneyDeposited', field: 'moneyDeposited',) as number[];
+      //   const rowValues = Object?.values(params.row) as any[];
+      //   const newValue = rowValues[7];
+      //   const indexOfT = newValue.indexOf("T");
 
-        return newValue.slice(0, indexOfT !== -1 ? indexOfT : undefined);
-      },
+      //   return newValue.slice(0, indexOfT !== -1 ? indexOfT : undefined);
+      // },
       // valueGetter: (params: GridValueGetterParams) =>
       //     `${params.row.firstName || ''} ${params.row.lastName || ''}`,
     },
@@ -266,6 +285,12 @@ const AllTransactions = () => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
+          <img
+    style={{ maxWidth: "100%", maxHeight: "calc(100vh - 64px)" }}
+    src={"data:image/jpeg;base64," + image}
+    alt="pic"
+/>
+
             {recentTransaction &&
             recentTransaction?.price &&
             recentTransaction?.moneyDeposited &&
@@ -274,6 +299,7 @@ const AllTransactions = () => {
                 (acc: number, curr: number) => acc + curr,
                 0
               )
+              
               ? `You owe ${
                   recentTransaction?.price -
                   recentTransaction?.moneyDeposited.reduce(

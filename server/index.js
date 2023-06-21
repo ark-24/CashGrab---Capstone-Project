@@ -50,10 +50,14 @@ io.on('connection', (socket) => {
     // console.log('Socket connected:', socket.id);
   
     socket.on('result', (data) => {
-      // Handle the image data received from the Raspberry Pi here
-      console.log('Image data received:', data);
       io.emit("result", data);
     });
+
+    socket.on('image', function (data) {                     // listen on client emit 'data'
+        var frame =  Buffer.from(data, 'base64').toString()
+        console.log("frame " + frame)
+    io.emit('image', frame); 
+    })
     
   socket.on('json', (data) => {
     // Handle the image data received from the Raspberry Pi here
