@@ -9,6 +9,6 @@ router.route('/recent').get(getRecentTransaction);
 router.route('/:id').get(getTransactionDetail);
 router.route('/').post(createTransaction);
 router.route('/recent/:id').patch(updateTransaction);
-router.route('recent/:id').delete(deleteTransaction);
+router.route('/:id').delete(deleteTransaction);
 
 export default router;

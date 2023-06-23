@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Add, CheckCircleOutlineRounded } from "@mui/icons-material";
-import { useForm, useGetIdentity, useTable } from "@pankod/refine-core";
+import { Add, CheckCircleOutlineRounded, Delete } from "@mui/icons-material";
+import {
+  useDelete,
+  useForm,
+  useGetIdentity,
+  useTable,
+} from "@pankod/refine-core";
 
 import { Dialog } from "@mui/material";
 import {
@@ -19,10 +24,10 @@ import {
   Typography,
 } from "@pankod/refine-mui";
 import { useNavigate } from "@pankod/refine-react-router-v6";
-
 import { CustomButton } from "components";
 import CreateTransaction from "./createTransaction";
 import io from "socket.io-client";
+import { count } from "console";
 // import transactionModel from './././server/mongodb/models/transaction.js';
 
 interface Transaction {
@@ -51,11 +56,14 @@ const AllTransactions = () => {
   const [isOpenDepositAlert, setIsOpenDepositAlert] = useState(false);
   const [depositAmount, setDepositAmount] = useState(0);
   const [image, setImage] = useState<Buffer>();
+  const { mutate } = useDelete();
+  const navigate = useNavigate();
 
   const [recentTransaction, setRecentTransaction] =
     useState<Transaction | null>();
 
   const [IsLoading, setIsLoading] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<string>("");
 
   const [open, setOpen] = React.useState(false);
   async function getRecentTransaction() {
@@ -143,16 +151,12 @@ const AllTransactions = () => {
     await handleIncomeDeposit(data.inserted);
   }
 
-
   async function handleImage(data: any) {
     console.log(`handle image in front end: ${data} `);
     //const imageBuffer = Buffer.from(data, 'base64');
-    console.log(data)
-    setImage(data)
+    console.log(data);
+    setImage(data);
   }
-
-
-
 
   useEffect(() => {
     socket.on("result", handleResult);
@@ -194,6 +198,16 @@ const AllTransactions = () => {
       editable: true,
       headerAlign: "center",
       align: "center",
+      valueGetter: (params: GridValueGetterParams) => {
+        const selectedItems = params.row.selectedItems;
+        let itemString = "";
+
+        for (const item of selectedItems) {
+          itemString += `${item.item}: ${item.count}\n`;
+        }
+
+        return itemString.trim(); // Trim any trailing newline characters
+      },
     },
     {
       field: "price",
@@ -213,6 +227,8 @@ const AllTransactions = () => {
       valueGetter: (params: GridValueGetterParams) => {
         //const moneyDeposited = params.getValue('moneyDeposited', field: 'moneyDeposited',) as number[];
         //const total = moneyDeposited.reduce((acc, curr) => acc + curr, 0);
+        // console.log(Object.entries(params.row))
+        //bug double click
         return `${Object.values(params.row)[1].reduce(
           (acc: any, curr: any) => acc + curr,
           0
@@ -270,6 +286,27 @@ const AllTransactions = () => {
     setIsOpenDepositAlert(false);
     window.location.reload();
   };
+  const handleDeleteProperty = () => {
+    if (selectedRow) {
+      mutate(
+        {
+          resource: "transactions",
+          id: selectedRow as string,
+        },
+        {
+          onSuccess: () => {
+            navigate("/transactions");
+          },
+        }
+      );
+    }
+  };
+
+  function handleRow(row: any){
+    setSelectedRow(row.id)
+    console.log(typeof(row.id))
+
+  }
 
   return (
     <>
@@ -285,11 +322,11 @@ const AllTransactions = () => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-          <img
-    style={{ maxWidth: "100%", maxHeight: "calc(100vh - 64px)" }}
-    src={"data:image/jpeg;base64," + image}
-    alt="pic"
-/>
+            <img
+              style={{ maxWidth: "100%", maxHeight: "calc(100vh - 64px)" }}
+              src={"data:image/jpeg;base64," + image}
+              alt="pic"
+            />
 
             {recentTransaction &&
             recentTransaction?.price &&
@@ -299,7 +336,6 @@ const AllTransactions = () => {
                 (acc: number, curr: number) => acc + curr,
                 0
               )
-              
               ? `You owe ${
                   recentTransaction?.price -
                   recentTransaction?.moneyDeposited.reduce(
@@ -348,11 +384,25 @@ const AllTransactions = () => {
                 sortModel: [{ field: "date", sort: "desc" }],
               },
             }}
+            //checkboxSelection
+            onCellClick={(row) => handleRow(row)}
             getRowId={(row: any) => row._id}
             rows={allTransactions}
             columns={columns}
             sx={{
               backgroundColor: "#ffffff",
+            }}
+          />
+        </Box>
+        <Box>
+          <CustomButton
+            title={"Delete"}
+            backgroundColor="#D2042D"
+            color="#F3EC0E"
+            fullWidth
+            icon={<Delete />}
+            handleClick={() => {
+              handleDeleteProperty();
             }}
           />
         </Box>

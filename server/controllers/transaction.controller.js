@@ -35,7 +35,7 @@ const createTransaction = async (req,res) =>{
 
     try {
     
-        const {moneyDeposited, item, price, details, customerEmail} = req.body;
+        const {moneyDeposited, selectedItems, price, details, customerEmail} = req.body;
 
          //Start new session for atomic
 
@@ -47,7 +47,7 @@ const createTransaction = async (req,res) =>{
         if(!user) throw new Error('User not found')
 
         const newTransaction = await Transaction.create({
-         item, 
+         selectedItems, 
          price, 
          moneyDeposited,
          details,
@@ -96,8 +96,32 @@ const updateTransaction = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
-const deleteTransaction = async(req,res) =>{};
 
+  const deleteTransaction = async (req, res) => {
+    try {
+      const id = req.params.id;
+  
+      const transactionToDelete = await Transaction.findById(id).populate(
+        "creator"
+      );
+  
+      if (!transactionToDelete) throw new Error("Transaction not found");
+  
+      const session = await mongoose.startSession();
+      session.startTransaction();
+  
+      await transactionToDelete.deleteOne({ session });
+      transactionToDelete.creator.allTransactions.pull(transactionToDelete);
+  
+      await transactionToDelete.creator.save({ session });
+      await session.commitTransaction();
+  
+      res.status(200).json({ message: "Transaction deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
 
 export{
     getAllTransactions,
