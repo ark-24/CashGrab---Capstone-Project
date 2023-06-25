@@ -46,4 +46,33 @@ const addEmployee = async (req, res) => {
   }
 };
 
-export { getEmployees, addEmployee };
+
+
+const deleteEmployee = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const employeeToDelete = await Employee.findById(id).populate("user");
+    if (!employeeToDelete) throw new Error("Employee not found");
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    await employeeToDelete.deleteOne({ session });
+
+    // Commit the transaction before updating the creator
+    await session.commitTransaction();
+    session.endSession();
+
+    if (employeeToDelete.creator) {
+      await employeeToDelete.creator.save();
+    }
+
+    res.status(200).json({ message: "Employee deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+export { getEmployees, addEmployee,deleteEmployee };

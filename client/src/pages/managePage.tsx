@@ -1,5 +1,5 @@
-import { Add } from "@mui/icons-material";
-import { useTable } from "@pankod/refine-core";
+import { Add, Delete } from "@mui/icons-material";
+import { useDelete, useTable } from "@pankod/refine-core";
 import {
   Box,
   DataGrid,
@@ -13,11 +13,18 @@ import CreateIncomeStatement from "./createIncomeStatement";
 import { Grid, Button } from '@mui/material';
 import AddEmployee from "./addEmployee";
 import AddItem from "./addItems";
+import { useNavigate } from "@pankod/refine-react-router-v6";
 
 const ManagePage = () => {
   const [itemOpen, setItemOpen] = useState(false);
   const [employeeOpen, setEmployeeOpen] = useState(false);
+  const [selectedEmployeeRow, setSelectedEmployeeRow] = useState<string>();
+  const [selectedItemRow, setSelectedItemRow] = useState<string>();
 
+
+
+  const { mutate } = useDelete();
+  const navigate = useNavigate();
 
   const handleEmployeeClickOpen = () => {
     setEmployeeOpen(true);
@@ -51,7 +58,14 @@ const ManagePage = () => {
   });
   const allItems = itemData?.data ?? [];
 
+  function handleEmployeeRow(row: any) {
+    setSelectedEmployeeRow(row.id)
 
+  }
+
+  function handleItemRow(row: any) {
+    setSelectedItemRow(row.id)
+  }
 
   if (isLoading) return <Typography>Loading ...</Typography>;
   if (isError) return <Typography>Error ...</Typography>;
@@ -62,7 +76,7 @@ const ManagePage = () => {
       field: "firstName",
       headerName: "First Name",
       width: 200,
-      editable: true,
+      editable: false,
       headerAlign: "center",
       align: "center",
     },
@@ -70,7 +84,7 @@ const ManagePage = () => {
       field: "lastName",
       headerName: "Last Name",
       width: 200,
-      editable: true,
+      editable: false,
       headerAlign: "center",
       align: "center",
     },
@@ -80,7 +94,16 @@ const ManagePage = () => {
       type: "number",
       width: 200,
 
-      editable: true,
+      editable: false,
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      width: 200,
+
+      editable: false,
       headerAlign: "center",
       align: "center",
     },
@@ -105,6 +128,44 @@ const ManagePage = () => {
       align: "center",
     },
   ];
+
+  const handleDeleteEmployee = () => {
+    if (selectedEmployeeRow) {
+      mutate(
+        {
+          resource: "employees",
+          id: selectedEmployeeRow as string,
+        },
+        {
+          onSuccess: () => {
+            navigate("/management");
+          },
+        }
+      );
+      window.location.reload();
+    }
+  };
+
+  const handleDeleteItem = () => {
+    if (selectedItemRow) {
+      console.log("in delete item");
+      
+      mutate(
+        {
+          resource: "items",
+          id: selectedItemRow as string,
+        },
+        {
+          onSuccess: () => {
+            navigate("/management");
+          },
+        }
+      );
+      window.location.reload();
+
+
+    }
+  };
 
   return (
     <Box>
@@ -156,6 +217,7 @@ const ManagePage = () => {
           getRowId={(row) => row._id}
           rows={allEmployees}
           columns={employeeColumns}
+          onCellClick={(row) => handleEmployeeRow(row)}
           sx={{
             backgroundColor: "#ffffff",
           }}
@@ -166,6 +228,7 @@ const ManagePage = () => {
               sortModel: [{ field: "date", sort: "desc" }],
             },
           }}
+          onCellClick={(row) => handleItemRow(row)}
           getRowId={(row) => row._id}
           rows={allItems}
           columns={itemColumns}
@@ -174,6 +237,34 @@ const ManagePage = () => {
           }}
         />
       </Box>
+      <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginTop: "20px",
+      }}
+    >
+      <CustomButton
+        title={"Delete Employee"}
+        backgroundColor="#D2042D"
+        color="#F3EC0E"
+        icon={<Delete />}
+        handleClick={() => {
+          handleDeleteEmployee();
+        }}
+      />
+
+      <CustomButton
+        title={"Delete Item"}
+        backgroundColor="#D2042D"
+        color="#F3EC0E"
+        icon={<Delete />}
+        handleClick={() => {
+          handleDeleteItem();
+        }}
+      />
+    </Box>
+        
     </Box>
   );
 };

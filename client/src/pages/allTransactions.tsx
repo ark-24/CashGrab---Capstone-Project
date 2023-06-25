@@ -29,6 +29,7 @@ import { CustomButton } from "components";
 import CreateTransaction from "./createTransaction";
 import io from "socket.io-client";
 import { count } from "console";
+import moment from "moment-timezone";
 // import transactionModel from './././server/mongodb/models/transaction.js';
 
 
@@ -213,50 +214,57 @@ const AllTransactions = () => {
 
   const columns: GridColDef[] = [
     {
+      field: "employee",
+      headerName: "Employee",
+      width: 225,
+      editable: false,
+      headerAlign: "center",
+      align: "center",
+    },
+    {
       field: "item",
       headerName: "Item",
-      width: 225,
-      editable: true,
+      width: 250,
+      editable: false,
       headerAlign: "center",
       align: "center",
       valueGetter: (params: GridValueGetterParams) => {
         const selectedItems = params.row.selectedItems;
         let itemString = "";
-
-
         for (const item of selectedItems) {
           itemString += `${item.item}: ${item.count}\n`;
         }
-
-
         return itemString.trim(); // Trim any trailing newline characters
       },
+
     },
     {
       field: "price",
       headerName: "Price",
-      width: 225,
-      editable: true,
+      width: 150,
+      editable: false,
       headerAlign: "center",
       align: "center",
+
     },
     {
       field: "moneyDeposited",
       headerName: "Money Deposited",
-      width: 225,
-      editable: true,
+      width: 150,
+      editable: false,
       headerAlign: "center",
       align: "center",
       valueGetter: (params: GridValueGetterParams) => {
         //const moneyDeposited = params.getValue('moneyDeposited', field: 'moneyDeposited',) as number[];
         //const total = moneyDeposited.reduce((acc, curr) => acc + curr, 0);
         // console.log(Object.entries(params.row))
-        //bug double click
-        return `${Object.values(params.row)[1].reduce(
+        // console.log(Object.values(params.row))
+        return `${Object?.values(params.row)[1]?.reduce(
           (acc: any, curr: any) => acc + curr,
           0
-        )}`;
+        )}`
       },
+
     },
     //selected.splice(selected.findIndex((s) => s === newValue), 1);
 
@@ -266,38 +274,35 @@ const AllTransactions = () => {
       headerName: "Customer Email",
       type: "string",
       width: 225,
-      editable: true,
+      editable: false,
       headerAlign: "center",
       align: "center",
     },
     {
       field: "details",
-      headerName: "Information",
+      headerName: "Comments",
       type: "string",
-      width: 225,
-      editable: true,
+      width: 350,
+      editable: false,
       headerAlign: "center",
       align: "center",
+
     },
     {
       field: "date",
       headerName: "Date",
       description: "This column has a value getter and is not sortable.",
       sortable: false,
-      width: 250,
+      width: 200,
       headerAlign: "center",
       align: "center",
-      // valueGetter: (params: GridValueGetterParams) => {
-      //   //const moneyDeposited = params.getValue('moneyDeposited', field: 'moneyDeposited',) as number[];
-      //   const rowValues = Object?.values(params.row) as any[];
-      //   const newValue = rowValues[7];
-      //   const indexOfT = newValue.indexOf("T");
+      valueGetter: (params: GridValueGetterParams) => {
 
+      const utcDate = params.value; // Assuming the date is stored in UTC format
+      const pstDate = moment.utc(utcDate).subtract(7, 'hours');
+      return pstDate.format('YYYY-MM-DD HH:mm:ss'); // Format the date as desired
+    },
 
-      //   return newValue.slice(0, indexOfT !== -1 ? indexOfT : undefined);
-      // },
-      // valueGetter: (params: GridValueGetterParams) =>
-      //     `${params.row.firstName || ''} ${params.row.lastName || ''}`,
     },
   ];
   const handleToastClose = (
@@ -312,7 +317,7 @@ const AllTransactions = () => {
     setIsOpenDepositAlert(false);
     window.location.reload();
   };
-  const handleDeleteProperty = () => {
+  const handleDeleteTransaction = () => {
     if (selectedRow) {
       mutate(
         {
@@ -424,20 +429,34 @@ const AllTransactions = () => {
             getRowId={(row: any) => row._id}
             rows={allTransactions}
             columns={columns}
+            columnBuffer={3}
             sx={{
               backgroundColor: "#ffffff",
+              flex: 1
+              // "& .MuiDataGrid-columnHeaderTitle": {
+              //   whiteSpace: "normal",
+              //   lineHeight: "normal"
+              // },
+              // "& .MuiDataGrid-columnHeader": {
+              //   // Forced to use important since overriding inline styles
+              //   height: "unset !important"
+              // },
+              // "& .MuiDataGrid-columnHeaders": {
+              //   // Forced to use important since overriding inline styles
+              //   maxHeight: "168px !important"
+              // }
             }}
           />
         </Box>
-        <Box sx={{ justifyContent: "right" }}>
+        <Box sx={{ justifyContent: "bottom" }}>
           <CustomButton
-            title={"Delete"}
+            title={"Abort Transaction"}
             backgroundColor="#D2042D"
             color="#F3EC0E"
             fullWidth
             icon={<Delete />}
             handleClick={() => {
-              handleDeleteProperty();
+              handleDeleteTransaction();
             }}
           />
         </Box>

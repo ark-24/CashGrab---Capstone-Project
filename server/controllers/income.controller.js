@@ -5,7 +5,6 @@ import Bill from '../mongodb/models/bills.js';
 
 import mongoose from "mongoose";
 
-import axios from 'axios'
 
 const getAllIncome = async(req,res) =>{
     try {
@@ -33,7 +32,6 @@ const createIncomeStatement = async(req,res) =>{
 
         const theUser = await User.findOne({user}).session(session);
         if(!user) throw new Error('User not found')
-
 
 
         const newIncomeTransaction = await Income.create({

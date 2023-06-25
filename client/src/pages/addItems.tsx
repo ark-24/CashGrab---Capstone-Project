@@ -49,6 +49,8 @@ const AddItem = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
           }
       onClose();
       reset();
+      window.location.reload();
+
     } catch (error) {
       console.log(error);
     }

@@ -10,6 +10,7 @@ import {
   DialogTitle,
   FormControl,
   IconButton,
+  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -240,7 +241,8 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
         ...data,
         email: user?.email,
         price: price,
-        selectedItems: itemCounts
+        selectedItems: itemCounts,
+        creator: user
       });
       onClose(); // close dialog on success
       reset();
@@ -262,13 +264,14 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
           <DialogContent>
             <DialogContentText>Enter Transaction Details</DialogContentText>
 
-
+            <InputLabel id="employee-select-label" sx={{marginTop: "15px",}}>Employee</InputLabel>
             <Select
               variant="outlined"
               sx={{
-                marginTop: "20px",
+                marginTop: "5px",
               }}
               id="employee"
+              labelId="employee-select-label"
               label="Employee"
               fullWidth
               color="info"
@@ -280,7 +283,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
                 const selectedValue = e.target.value;
                 const selectedEmployee = employeeData?.find((employee) => employee.itemName === selectedValue);
                 if (selectedEmployee) {
-                  setSelectedEmployee(selectedItem);
+                  setSelectedEmployee(selectedEmployee);
                 }
               }}
             //value={Object.keys(selectedItems)}
@@ -293,14 +296,16 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
             </Select>
 
 
+            <InputLabel id="item-select-label" sx={{marginTop: "15px",}}>Item</InputLabel>
 
 
             <Select
               variant="outlined"
               sx={{
-                marginTop: "20px",
+                marginTop: "5px",
               }}
               id="item"
+              labelId="item-select-label"
               label="Item"
               fullWidth
               multiple
@@ -375,10 +380,10 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               autoFocus
               id="info"
               placeholder="Extra Information"
-              label="Details"
+              label="Comments"
               multiline
               fullWidth
-              maxRows={3}
+              maxRows={2}
               {...register("details", {
                 required: false,
               })}

@@ -44,4 +44,33 @@ const addItem = async (req, res) => {
   }
 };
 
-export { getItems, addItem };
+const deleteItem = async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log("id " + id)
+
+    const itemToDelete = await Item.findById(id).populate("user");
+    console.log(itemToDelete);
+    if (!itemToDelete) throw new Error("Item not found");
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    await itemToDelete.deleteOne({ session });
+
+    // Commit the transaction before updating the creator
+    await session.commitTransaction();
+    session.endSession();
+
+    if (itemToDelete.creator) {
+      await itemToDelete.creator.save();
+    }
+
+    res.status(200).json({ message: "Item deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+export { getItems, addItem, deleteItem };

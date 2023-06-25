@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const TransactionSchema = new mongoose.Schema({
     moneyDeposited: {type: Array, required: false},
+    employee: {type: String, required: false},
     selectedItems: [
         {
           item: { type: String, required: false },

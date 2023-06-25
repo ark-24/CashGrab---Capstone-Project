@@ -1,5 +1,6 @@
 import Transaction from '../mongodb/models/transaction.js';
 import User from '../mongodb/models/user.js';
+import moment from 'moment-timezone';
 
 
 import mongoose from "mongoose";
@@ -35,7 +36,7 @@ const createTransaction = async (req,res) =>{
 
     try {
     
-        const {moneyDeposited, selectedItems, price, details, customerEmail} = req.body;
+        const {moneyDeposited, employee, selectedItems, price, details, customerEmail, creator} = req.body;
 
          //Start new session for atomic
 
@@ -43,17 +44,23 @@ const createTransaction = async (req,res) =>{
 
         session.startTransaction(); //ensures atomic
 
-        const user = await User.findOne({customerEmail}).session(session);
+        const user = await User.findOne({creator}).session(session);
         if(!user) throw new Error('User not found')
+       
+
+        const pstDate = moment().tz('America/Los_Angeles');
+
+        console.log(pstDate)
 
         const newTransaction = await Transaction.create({
+         employee,
          selectedItems, 
          price, 
          moneyDeposited,
          details,
          customerEmail,
          creator: user._id,
-         date: new Date(),
+         date: pstDate,
 
         })
         console.log(newTransaction)
@@ -104,8 +111,8 @@ const updateTransaction = async (req, res) => {
       const transactionToDelete = await Transaction.findById(id).populate(
         "creator"
       );
-  
       if (!transactionToDelete) throw new Error("Transaction not found");
+      if(transactionToDelete.moneyDeposited > 0) throw new Error("Cannot cancel processed transaction")
   
       const session = await mongoose.startSession();
       session.startTransaction();
