@@ -7,6 +7,7 @@ import {
   useTable,
 } from "@pankod/refine-core";
 
+
 import { Dialog } from "@mui/material";
 import {
   Box,
@@ -30,6 +31,7 @@ import io from "socket.io-client";
 import { count } from "console";
 // import transactionModel from './././server/mongodb/models/transaction.js';
 
+
 interface Transaction {
   moneyDeposited: number[];
   item: string;
@@ -41,7 +43,9 @@ interface Transaction {
   date: Date;
 }
 
+
 const socket = io("http://localhost:8080");
+
 
 const AllTransactions = () => {
   const {
@@ -51,7 +55,9 @@ const AllTransactions = () => {
   });
   // const data = await getAllTransaction();
 
+
   const { data: user } = useGetIdentity();
+
 
   const [isOpenDepositAlert, setIsOpenDepositAlert] = useState(false);
   const [depositAmount, setDepositAmount] = useState(0);
@@ -59,11 +65,14 @@ const AllTransactions = () => {
   const { mutate } = useDelete();
   const navigate = useNavigate();
 
+
   const [recentTransaction, setRecentTransaction] =
     useState<Transaction | null>();
 
+
   const [IsLoading, setIsLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState<string>("");
+
 
   const [open, setOpen] = React.useState(false);
   async function getRecentTransaction() {
@@ -105,6 +114,7 @@ const AllTransactions = () => {
     }
   }
 
+
   const setRecentDeposit = async (depositAmt: number) => {
     try {
       setIsLoading(true);
@@ -142,6 +152,7 @@ const AllTransactions = () => {
     }
   };
 
+
   async function handleResult(data: any) {
     console.log(`data received in front end: ${data} `);
     setDepositAmount(data.inserted);
@@ -151,12 +162,14 @@ const AllTransactions = () => {
     await handleIncomeDeposit(data.inserted);
   }
 
+
   async function handleImage(data: any) {
     console.log(`handle image in front end: ${data} `);
     //const imageBuffer = Buffer.from(data, 'base64');
     console.log(data);
     setImage(data);
   }
+
 
   useEffect(() => {
     socket.on("result", handleResult);
@@ -165,30 +178,38 @@ const AllTransactions = () => {
     };
   }, [handleResult, socket]);
 
+
   useEffect(() => {
     socket.on("image", handleImage);
+
 
     return () => {
       socket.off("image", handleImage);
     };
   }, [handleImage, socket]);
 
+
   if (IsLoading) {
     return <div>Loading...</div>;
   }
+
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
+
   const handleClose = () => {
     setOpen(false);
   };
 
+
   const allTransactions = data?.data ?? [];
+
 
   //if (isLoading) return <Typography>Loading ...</Typography>
   //if (isError) return <Typography>Error ...</Typography>
+
 
   const columns: GridColDef[] = [
     {
@@ -202,9 +223,11 @@ const AllTransactions = () => {
         const selectedItems = params.row.selectedItems;
         let itemString = "";
 
+
         for (const item of selectedItems) {
           itemString += `${item.item}: ${item.count}\n`;
         }
+
 
         return itemString.trim(); // Trim any trailing newline characters
       },
@@ -236,6 +259,7 @@ const AllTransactions = () => {
       },
     },
     //selected.splice(selected.findIndex((s) => s === newValue), 1);
+
 
     {
       field: "customerEmail",
@@ -269,6 +293,7 @@ const AllTransactions = () => {
       //   const newValue = rowValues[7];
       //   const indexOfT = newValue.indexOf("T");
 
+
       //   return newValue.slice(0, indexOfT !== -1 ? indexOfT : undefined);
       // },
       // valueGetter: (params: GridValueGetterParams) =>
@@ -282,6 +307,7 @@ const AllTransactions = () => {
     // if (reason === 'clickaway') {
     //     return;
     // }
+
 
     setIsOpenDepositAlert(false);
     window.location.reload();
@@ -299,14 +325,20 @@ const AllTransactions = () => {
           },
         }
       );
+      socket.emit("cancel", "cancelled")
+
+
     }
   };
 
-  function handleRow(row: any){
+
+  function handleRow(row: any) {
     setSelectedRow(row.id)
-    console.log(typeof(row.id))
+    console.log(typeof (row.id))
+
 
   }
+
 
   return (
     <>
@@ -328,21 +360,21 @@ const AllTransactions = () => {
               alt="pic"
             />
 
+
             {recentTransaction &&
-            recentTransaction?.price &&
-            recentTransaction?.moneyDeposited &&
-            recentTransaction?.price >
+              recentTransaction?.price &&
+              recentTransaction?.moneyDeposited &&
+              recentTransaction?.price >
               recentTransaction?.moneyDeposited.reduce(
                 (acc: number, curr: number) => acc + curr,
                 0
               )
-              ? `You owe ${
-                  recentTransaction?.price -
-                  recentTransaction?.moneyDeposited.reduce(
-                    (acc: number, curr: number) => acc + curr,
-                    0
-                  )
-                }`
+              ? `You owe ${recentTransaction?.price -
+              recentTransaction?.moneyDeposited.reduce(
+                (acc: number, curr: number) => acc + curr,
+                0
+              )
+              }`
               : "Thank You! No outstanding balance remaining."}
           </DialogContentText>
         </DialogContent>
@@ -350,6 +382,7 @@ const AllTransactions = () => {
           <Button onClick={handleToastClose}>OK</Button>
         </DialogActions>
       </Dialog>
+
 
       <Box>
         <Stack
@@ -362,6 +395,7 @@ const AllTransactions = () => {
             Transactions
           </Typography>
 
+
           <Box sx={{ justifyContent: "end" }}>
             <CustomButton
               title="Add Transaction"
@@ -373,6 +407,7 @@ const AllTransactions = () => {
           </Box>
         </Stack>
         <CreateTransaction isOpen={open} onClose={handleClose} />
+
 
         <Box
           mt="20px"
@@ -394,7 +429,7 @@ const AllTransactions = () => {
             }}
           />
         </Box>
-        <Box>
+        <Box sx={{ justifyContent: "right" }}>
           <CustomButton
             title={"Delete"}
             backgroundColor="#D2042D"
@@ -411,5 +446,9 @@ const AllTransactions = () => {
   );
 };
 
+
 export default AllTransactions;
 //navigate('/transactions/create')
+
+
+
