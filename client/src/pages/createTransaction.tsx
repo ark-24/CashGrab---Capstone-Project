@@ -134,11 +134,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
 
 
     setSelectedItems(updatedSelectedItems);
-    // setSelectedItem(
-    //   selectedValues.map((selectedValue) =>
-    //     itemData?.find((item) => item.itemName === selectedValue)
-    //   )
-    // );
+    
   };
 
 
@@ -277,7 +273,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               color="info"
               displayEmpty
               {...register("employee", {
-                required: false,
+                required: true,
               })}
               onChange={(e) => {
                 const selectedValue = e.target.value;
@@ -312,7 +308,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               color="info"
               displayEmpty
               {...register("item", {
-                required: false,
+                required: true,
               })}
               onChange={handleItemChange}
               value={Object.keys(selectedItems)}
@@ -330,7 +326,9 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
                 key={item}
                 label={`${item} Quantity`}
                 fullWidth
+                sx={{marginTop: "5px"}}
                 type="number"
+                required={true}
                 onChange={quantity => handleItemQuantity(quantity, item)}
                 variant="standard"
               />
@@ -349,7 +347,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               value={price}
               variant="standard"
               {...register("price", {
-                required: false,
+                required: true,
               })}
 
 
