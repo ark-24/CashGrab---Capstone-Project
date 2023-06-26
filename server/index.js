@@ -7,6 +7,9 @@ import userRouter from './routes/user.routes.js';
 import billRouter from './routes/bill.routes.js';
 import transactionRouter from './routes/transaction.routes.js';
 import incomeRouter from './routes/income.routes.js';
+import employeeRouter from './routes/employee.routes.js';
+import itemRouter from './routes/item.routes.js';
+import manageRouter from './routes/management.routes.js';
 import bodyParser from 'body-parser'
 import {Server} from "socket.io";
 
@@ -20,7 +23,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());//{limit: '50mb
 app.use('/api/v1/users', userRouter);
-
+app.use('/api/v1/employees', employeeRouter);
+app.use('/api/v1/management', manageRouter);
+app.use('/api/v1/items', itemRouter);
 app.use('/api/v1/transactions', transactionRouter);
 app.use('/api/v1/income', incomeRouter);
 app.use('/api/v1/bills', billRouter);
@@ -42,19 +47,33 @@ app.get('/', (req,res)=>{
 })
 
 io.on('connection', (socket) => {
-    console.log('Socket connected:', socket.id);
+    // console.log('Socket connected:', socket.id);
   
-    socket.on('Data', (data) => {
-      // Handle the image data received from the Raspberry Pi here
-      console.log('Image data received:', data);
+    socket.on('result', (data) => {
+      io.emit("result", data);
     });
+
+    socket.on('image', function (data) {                     // listen on client emit 'data'
+        var frame =  Buffer.from(data, 'base64').toString()
+        console.log("frame " + frame)
+    io.emit('image', frame); 
+    })
+    
+  socket.on('json', (data) => {
+    // Handle the image data received from the Raspberry Pi here
+    console.log('transaction data received:', data);
+    io.emit("json", data);
   });
+  });
+
+
+//   socket.emit("result",{state:1, cost:data.price})
 
 
 const startServer = async () => {
     try{
         connectDb(process.env.MONGODB_URL);
-        server.listen(8080, ()=>{
+        server.listen(8080,()=>{//, '192.168.1.129'
             console.log("server listening on port 8080")
         })
     } catch(error) {

@@ -16,7 +16,10 @@ const AllIncomeStatements = () => {
         setOpen(false);
     };
 
-    const { tableQueryResult: { data, isLoading, isError } } = useTable();
+    const { tableQueryResult: { data, isLoading, isError } } = useTable({
+
+        hasPagination: false,
+    });
 
     const allIncomeStatements = data?.data ?? [];
 
@@ -32,7 +35,7 @@ const AllIncomeStatements = () => {
         {
             field: 'type',
             headerName: 'Type',
-            width: 150,
+            width: 200,
             editable: true,
             headerAlign: 'center',
             align: 'center',
@@ -40,7 +43,8 @@ const AllIncomeStatements = () => {
         {
             field: 'fiveDollarBills',
             headerName: '$5 Bills',
-            width: 150,
+            width: 200,
+
             editable: true,
             headerAlign: 'center',
             align: 'center',
@@ -51,7 +55,8 @@ const AllIncomeStatements = () => {
             field: 'tenDollarBills',
             headerName: '$10 Bills',
             type: 'number',
-            width: 150,
+            width: 200,
+
             editable: true,
             headerAlign: 'center',
             align: 'center',
@@ -62,7 +67,9 @@ const AllIncomeStatements = () => {
             field: 'twentyDollarBills',
             headerName: '$20 Bills',
             type: 'string',
-            width: 150,
+            width: 200,
+
+
             editable: true,
             headerAlign: 'center',
             align: 'center',
@@ -73,7 +80,9 @@ const AllIncomeStatements = () => {
             field: 'fiftyDollarBills',
             headerName: '$50 Bills',
             type: 'string',
-            width: 120,
+            width: 200,
+
+
             editable: true,
             headerAlign: 'center',
             align: 'center',
@@ -85,16 +94,20 @@ const AllIncomeStatements = () => {
             headerName: '$10 Bills',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            width: 150,
+            width: 200,
+
+
             headerAlign: 'center',
             align: 'center',
         },
         {
-            field: 'total',
-            headerName: 'Total Amount',
+            field: 'transactionTotal',
+            headerName: 'Transfer Total',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            width: 150,
+            width: 200,
+
+
             headerAlign: 'center',
             align: 'center',
         },
@@ -103,7 +116,7 @@ const AllIncomeStatements = () => {
             headerName: 'Date',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            width: 200,
+            width: 250,
             headerAlign: 'center',
             align: 'center',
 
@@ -131,6 +144,11 @@ const AllIncomeStatements = () => {
             <Box mt="20px" sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, height: '500px' }}>
 
                 <DataGrid
+                  initialState={{
+                    sorting: {
+                        sortModel: [{ field: 'date', sort: 'desc' }],
+                    },
+                }}
                     getRowId={(row) => row._id}
                     rows={allIncomeStatements}
                     columns={columns}

@@ -3,6 +3,9 @@ import { useLogin } from "@pankod/refine-core";
 import { Container, Box } from "@pankod/refine-mui";
 
 import { CredentialResponse } from "../interfaces/google";
+import { CustomButton } from "components";
+import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
 
 export const Login: React.FC = () => {
   const { mutate: login } = useLogin<CredentialResponse>();
@@ -70,6 +73,28 @@ export const Login: React.FC = () => {
           <Box mt={4}>
             <GoogleButton />
           </Box>
+          {/* <Box mt={4}>
+            <CustomButton
+              title={"Register"}
+              backgroundColor="#D2042D"
+              color="#F3EC0E"
+              icon={<AppRegistrationIcon />}
+              // handleClick={() => {
+              //   handleDeleteItem();
+              // }}
+            />
+          </Box>
+          <Box mt={4}>
+            <CustomButton
+              title={"Sign in"}
+              backgroundColor="#D2042D"
+              color="#F3EC0E"
+              icon={<HowToRegIcon />}
+              // handleClick={() => {
+              //   handleDeleteItem();
+              // }}
+            />
+          </Box> */}
         </Box>
       </Container>
     </Box>

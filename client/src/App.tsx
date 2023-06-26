@@ -23,6 +23,7 @@ import routerProvider from "@pankod/refine-react-router-v6";
 import axios, { AxiosRequestConfig } from "axios";
 import { ColorModeContextProvider } from "contexts";
 import { Title, Sider, Layout, Header } from "components/layout";
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
 import { Login } from "pages/login";
 
@@ -36,6 +37,7 @@ import { parseJwt } from "utils/parse-jwt";
 import AllTransactions from "pages/allTransactions";
 import CreateTransaction from "pages/createTransaction";
 import AllIncomeStatements from "pages/allIncomeStatements";
+import ManagePage from "pages/managePage";
 
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
@@ -154,6 +156,18 @@ function App() {
               //create: CreateTransaction,
               // canDelete: true,
             },
+            {
+              name: "management",
+              list: ManagePage,
+              //create: CreateTransaction,
+              icon: <ManageAccountsIcon />,
+              options: { label: "Manage", bgColor: "red" },
+
+              // edit: MuiInferencer,
+              // show: MuiInferencer,
+              //create: CreateTransaction,
+              // canDelete: true,
+            }
             // {
             //   name: "chart",
             //   list: MuiInferencer,

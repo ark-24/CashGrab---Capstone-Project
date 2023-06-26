@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 
 const getCurrentBillStatement = async(req,res) =>{
 
+
     try {
 
         const recentBills = await Bill.findOne({}).sort({ date: -1 }).exec();
@@ -36,6 +37,7 @@ const createBillStatement = async(req,res) =>{
         if(!user) throw new Error('User not found')
         
         const newBalance = mostRecentTransaction ? (transactionTotal + mostRecentTransaction.cashBalance) : transactionTotal;
+        await Bill.deleteMany({})
 
         const newBillTransaction = await Bill.create({
             fiveDollarBills, 

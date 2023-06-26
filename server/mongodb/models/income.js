@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const IncomeSchema = new mongoose.Schema({
-    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User',required: false},
     fiveDollarBills: {type: Number, required: false},
     tenDollarBills: {type: Number, required: false},
     twentyDollarBills: {type: Number, required: false},
