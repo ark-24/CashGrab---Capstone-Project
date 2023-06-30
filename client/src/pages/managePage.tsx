@@ -20,8 +20,55 @@ const ManagePage = () => {
   const [employeeOpen, setEmployeeOpen] = useState(false);
   const [selectedEmployeeRow, setSelectedEmployeeRow] = useState<string>();
   const [selectedItemRow, setSelectedItemRow] = useState<string>();
+  const [employeeData, setEmployeeData] = useState<any[]>([])
+  const [itemData, setItemData] = useState<any[]>([])
+
+  const user = localStorage.getItem("user");
 
 
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v1/employees/${user}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+      
+        if (response.ok) {
+          const data = await response.json();
+          setEmployeeData(data)
+        }
+        // Process and set the transactions in the component state or tableQueryResult
+    
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const fetchItemData = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/items/${user}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+    
+      if (response.ok) {
+        const data = await response.json();
+        setItemData(data)
+      }
+      // Process and set the transactions in the component state or tableQueryResult
+  
+    } catch (error) {
+      console.log(error);
+    }
+  
+
+  }
+    
+    // Call the fetchData function to fetch transactions
+    fetchEmployeeData();
+    fetchItemData()
+  },[user, itemOpen, employeeOpen])
 
   const { mutate } = useDelete();
   const navigate = useNavigate();
@@ -42,21 +89,21 @@ const ManagePage = () => {
     setEmployeeOpen(false);
   };
 
-  const {
-    tableQueryResult: {  data: employeeData },
-  } = useTable({
-    hasPagination: false,
-  });
-  const allEmployees = employeeData?.data ?? [];
+  // const {
+  //   tableQueryResult: {  data: employeeData },
+  // } = useTable({
+  //   hasPagination: false,
+  // });
+  // const allEmployees = employeeData?.data ?? [];
 
 
-  const {
-    tableQueryResult: { data: itemData, isLoading, isError },
-  } = useTable({
-    resource: "items",
-    hasPagination: false,
-  });
-  const allItems = itemData?.data ?? [];
+  // const {
+  //   tableQueryResult: { data: itemData, isLoading, isError },
+  // } = useTable({
+  //   resource: "items",
+  //   hasPagination: false,
+  // });
+  // const allItems = itemData?.data ?? [];
 
   function handleEmployeeRow(row: any) {
     setSelectedEmployeeRow(row.id)
@@ -67,8 +114,8 @@ const ManagePage = () => {
     setSelectedItemRow(row.id)
   }
 
-  if (isLoading) return <Typography>Loading ...</Typography>;
-  if (isError) return <Typography>Error ...</Typography>;
+  // if (isLoading) return <Typography>Loading ...</Typography>;
+  // if (isError) return <Typography>Error ...</Typography>;
 
   const employeeColumns: GridColDef[] = [
     //{ field: 'id', headerName: 'ID', width: 90 },
@@ -215,7 +262,7 @@ const ManagePage = () => {
             },
           }}
           getRowId={(row) => row._id}
-          rows={allEmployees}
+          rows={employeeData}
           columns={employeeColumns}
           onCellClick={(row) => handleEmployeeRow(row)}
           sx={{
@@ -230,7 +277,7 @@ const ManagePage = () => {
           }}
           onCellClick={(row) => handleItemRow(row)}
           getRowId={(row) => row._id}
-          rows={allItems}
+          rows={itemData}
           columns={itemColumns}
           sx={{
             backgroundColor: "#ffffff",

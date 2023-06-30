@@ -14,7 +14,8 @@ interface CreateIncomeDialogProps {
 const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
 
 
-    const { data: user } = useGetIdentity();
+    const user = localStorage.getItem("user");
+
     const { refineCore: { onFinish, formLoading }, register, handleSubmit, reset } = useForm();
 
 
@@ -44,10 +45,10 @@ const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => 
             <form onSubmit={handleSubmit(onFinishHandler)}>
 
                 <Dialog disablePortal open={isOpen} onClose={onClose}>
-                    <DialogTitle>New Transaction</DialogTitle>
+                    <DialogTitle>New Transfer</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Enter Transaction Details
+                            Enter Transfer Details
                         </DialogContentText>
                         <InputLabel sx={{ marginTop: "20px" }}>Type</InputLabel>
                         <Select

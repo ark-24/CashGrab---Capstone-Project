@@ -38,7 +38,8 @@ const socket = io("http://localhost:8080");
 
 
 const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
-  const { data: user } = useGetIdentity();
+  // const { data: user } = useGetIdentity();
+  const user = localStorage.getItem("user")
 
 
   const [price, setPrice] = useState<Number>();
@@ -47,6 +48,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
   const [selectedItems, setSelectedItems] = useState<{ [key: string]: number }>(
     {}
   );
+
   const [itemCounts, setItemCounts] = useState<
     {
       item: string;
@@ -64,7 +66,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
   useEffect(() => {
     const getItems = async () => {
       const response = await fetch(
-        "http://localhost:8080/api/v1/management/items"
+        `http://localhost:8080/api/v1/items/${user}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -80,7 +82,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
   useEffect(() => {
     const getEmployees = async () => {
       const response = await fetch(
-        "http://localhost:8080/api/v1/employees"
+        `http://localhost:8080/api/v1/employees/${user}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -235,7 +237,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
     try {
       await onFinish({
         ...data,
-        email: user?.email,
+        email: Email,
         price: price,
         selectedItems: itemCounts,
         creator: user
@@ -381,7 +383,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               label="Comments"
               multiline
               fullWidth
-              maxRows={2}
+              maxRows={1}
               {...register("details", {
                 required: false,
               })}

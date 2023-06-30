@@ -7,7 +7,7 @@ const router = express.Router();
 
 //router.route('/').get(getAllBillStatements);
 router.route('/').post(createBillStatement);
-router.route('/').get(getCurrentBillStatement);
+router.route('/:userId').get(getCurrentBillStatement);
 
 
 export default router;

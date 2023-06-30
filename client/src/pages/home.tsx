@@ -4,21 +4,17 @@ import { useList } from '@pankod/refine-core'
 import { CustomButton, PieChart, TotalRevenue } from 'components'
 import { Box, Stack, Typography } from '@pankod/refine-mui'
 const Home = () => {
-  const [supportsBluetooth, setSupportsBluetooth] = useState(false);
-  const [isDisconnected, setIsDisconnected] = useState(true);
-  useEffect(() => {
-    if (navigator.bluetooth) {
-      setSupportsBluetooth(true);
-    }
-    console.log(supportsBluetooth)
-  }, []);
+ 
+const  getData = async () => {
+  const response = await fetch(
+    "http://localhost:8080/api/v1/income/week"
+  );
 
-
-  const onDisconnected = (event: { target: any }) => {
-    alert(`The device ${event.target} is disconnected`);
-    setIsDisconnected(true);
+  if (response.ok) {
+    const data = await response.json();
+    console.log(JSON.parse(JSON.stringify(data)));
   }
-
+}
   /**
    * Update the value shown on the web page when a notification is
    * received.
@@ -28,6 +24,7 @@ const Home = () => {
    * Attempts to connect to a Bluetooth device and subscribe to
    * battery level readings using the battery service.
    */
+  getData()
 
   
   return (

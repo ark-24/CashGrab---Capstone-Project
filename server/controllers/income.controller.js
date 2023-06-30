@@ -2,13 +2,16 @@ import Income from '../mongodb/models/income.js';
 import User from '../mongodb/models/user.js';
 import Bill from '../mongodb/models/bills.js';
 
-
+import moment from 'moment-timezone';
 import mongoose from "mongoose";
 
 
 const getAllIncome = async(req,res) =>{
+  const userId = req.params.userId; 
+
+
     try {
-        const incomes = await Income.find({}).limit(req.query._end);
+        const incomes = await Income.find({user: userId}).limit(req.query._end);
         res.status(200).json(incomes);
 
         } catch (error) {
@@ -42,12 +45,12 @@ const createIncomeStatement = async(req,res) =>{
             hundredDollarBills,
             transactionTotal,
             type,
+            user,
             date: new Date(),
 
 
         })
 
-        console.log(newIncomeTransaction)
 
         const mostRecentBill = await Bill.findOne({}).sort({ date: -1 }).exec();
 
@@ -102,6 +105,7 @@ const createIncomeStatement = async(req,res) =>{
               totalHundredDollarBills,
               cashBalance: newCashBalance,
               date: new Date(),
+              user,
             });
           
           
@@ -119,11 +123,13 @@ const createIncomeStatement = async(req,res) =>{
             totalHundredDollarBills:  mostRecentBill ? Number(mostRecentBill.totalHundredDollarBills) + Number(hundredDollarBills) : Number(hundredDollarBills),
             cashBalance: Number(newBalance),
             date: new Date(),
-
+            user
 
         })
 
     }
+    // await Income.deleteMany({})
+    // await Bill.deleteMany({})
         await theUser.save({session})
         await session.commitTransaction();
         //console.log(newBillTransaction)
@@ -135,9 +141,48 @@ const createIncomeStatement = async(req,res) =>{
 
 
 };
+const getIncomePerDay = async (req, res) => {
+  const userId = req.params.userId; 
+  console.log("hit income")
+  try {
+    const startOfWeek = moment().tz("America/Los_Angeles").startOf("isoWeek");
+    const endOfWeek = moment().tz("America/Los_Angeles").endOf("isoWeek");
+
+    const incomePerDay = await Income.aggregate([
+      {
+        $match: {
+          user: userId,
+          date: { $gte: startOfWeek.toDate(), $lte: endOfWeek.toDate() },
+        },
+      },
+      {
+        $group: {
+          _id: { $dayOfWeek: "$date" },
+          totalIncome: { $sum: "$transactionTotal" },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+    console.log(incomePerDay)
+    const incomeArray = new Array(7).fill(0);
+    incomePerDay.forEach((income) => {
+      const dayOfWeek = income._id === 1 ? 7 : income._id - 1;
+      incomeArray[dayOfWeek] = income.totalIncome;
+    });
+
+    res.json(incomeArray);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 
 export{
     getAllIncome,
     getCurrentIncome,
-    createIncomeStatement
+    createIncomeStatement,
+    getIncomePerDay
 }

@@ -7,6 +7,9 @@ import CreateIncomeStatement from './createIncomeStatement';
 
 const AllIncomeStatements = () => {
     const [open, setOpen] = useState(false);
+    const [data, setData] = useState<any[]>([])
+    const user = localStorage.getItem("user");
+
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -16,19 +19,44 @@ const AllIncomeStatements = () => {
         setOpen(false);
     };
 
-    const { tableQueryResult: { data, isLoading, isError } } = useTable({
+    // const { tableQueryResult: { data, isLoading, isError } } = useTable({
 
-        hasPagination: false,
-    });
-
-    const allIncomeStatements = data?.data ?? [];
-
-    console.log(allIncomeStatements);
+    //     hasPagination: false,
+    // });
 
 
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const response = await fetch(`http://localhost:8080/api/v1/income/${user}`, {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+            });
+          
+            if (response.ok) {
+              const data = await response.json();
+            setData(data)
+            }
+            // Process and set the transactions in the component state or tableQueryResult
+        
+          } catch (error) {
+            console.log(error);
+          }
+        };
+      
+        
+        // Call the fetchData function to fetch transactions
+        fetchData();
+      },[user, open])
+      
+    // const allIncomeStatements = data?.data ?? [];
 
-    if (isLoading) return <Typography>Loading ...</Typography>
-    if (isError) return <Typography>Error ...</Typography>
+    // console.log(allIncomeStatements);
+
+
+
+    // if (isLoading) return <Typography>Loading ...</Typography>
+    // if (isError) return <Typography>Error ...</Typography>
 
     const columns: GridColDef[] = [
         //{ field: 'id', headerName: 'ID', width: 90 },
@@ -150,7 +178,7 @@ const AllIncomeStatements = () => {
                     },
                 }}
                     getRowId={(row) => row._id}
-                    rows={allIncomeStatements}
+                    rows={data}
                     columns={columns}
                     sx={{
                         backgroundColor: "#ffffff"

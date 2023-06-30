@@ -4,10 +4,13 @@ import Item from "../mongodb/models/items.js";
 import mongoose from "mongoose";
 
 const getItems = async (req, res) => {
-    const {user} = req.body
+    const userId = req.params.userId; 
+    console.log("hit ep");
+
   try {
-    const employees = await Item.find({ user }).limit(req.query._end);
-    res.status(200).json(employees);
+    const items = await Item.find({ user: userId }).limit(req.query._end);
+    console.log(items);
+    res.status(200).json(items);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -30,7 +33,7 @@ const addItem = async (req, res) => {
     const newItem = await Item.create({
       itemName,
       price,
-      creator: user._id,
+      user,
       date: new Date(),
     });
     console.log(newItem);

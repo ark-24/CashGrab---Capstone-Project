@@ -5,16 +5,35 @@ import moment from 'moment-timezone';
 
 import mongoose from "mongoose";
 
-const getAllTransactions = async(req,res) =>{
-    try {
-        const transactions = await Transaction.find({}).limit(req.query._end);
-        res.status(200).json(transactions);
+const getAllTransactions = async (req, res) => {
+  console.log("hit all ep")
 
-        } catch (error) {
-        res.status(500).json({message: error.message})
-        
-    }
+  try {
+    const userId = req.params.userId; 
+    // console.log(req.body)
+
+    const transactions = await Transaction.find({  }).limit(req.query._end);
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
+
+const getTransactions = async (req, res) => {
+  console.log("hit ep")
+
+  try {
+    const userId = req.params.userId; 
+    console.log(req.body)
+
+    const transactions = await Transaction.find({ creator: userId }).limit(req.query._end);
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 
 const getRecentTransaction = async(req,res) =>{
     try {
@@ -37,6 +56,7 @@ const createTransaction = async (req,res) =>{
     try {
     
         const {moneyDeposited, employee, selectedItems, price, details, customerEmail, creator} = req.body;
+        console.log(creator)
 
          //Start new session for atomic
 
@@ -44,7 +64,8 @@ const createTransaction = async (req,res) =>{
 
         session.startTransaction(); //ensures atomic
 
-        const user = await User.findOne({creator}).session(session);
+        const user = await User.findOne({_id: creator}).session(session);
+        console.log(user)
         if(!user) throw new Error('User not found')
        
 
@@ -63,7 +84,7 @@ const createTransaction = async (req,res) =>{
          date: pstDate,
 
         })
-        console.log(newTransaction)
+        // console.log(newTransaction)
 
         user.allTransactions.push(newTransaction._id);
 
@@ -137,4 +158,5 @@ export{
     updateTransaction,
     deleteTransaction,
     getRecentTransaction,
+    getTransactions
 }

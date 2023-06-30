@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@types/web-bluetooth": "^0.0.17",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0",
     "moment-timezone": "^0.5.43",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1"

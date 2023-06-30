@@ -26,7 +26,9 @@ interface CreateIncomeDialogProps {
 }
 
 const AddEmployee = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
-  const { data: user } = useGetIdentity();
+  // const { data: user } = useGetIdentity();
+  const user = localStorage.getItem("user");
+
   const {
     refineCore: { onFinish, formLoading },
     register,

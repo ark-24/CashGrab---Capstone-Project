@@ -30,6 +30,7 @@ import CreateTransaction from "./createTransaction";
 import io from "socket.io-client";
 import { count } from "console";
 import moment from "moment-timezone";
+import dataProvider from "@pankod/refine-simple-rest";
 // import transactionModel from './././server/mongodb/models/transaction.js';
 
 
@@ -49,15 +50,22 @@ const socket = io("http://localhost:8080");
 
 
 const AllTransactions = () => {
-  const {
-    tableQueryResult: { data, isLoading, isError },
-  } = useTable({
-    hasPagination: false,
-  });
+  const { data: userId } = useGetIdentity();
+  // console.log(user)
+  const [data, setData] = useState<any[]>([])
+  const user = localStorage.getItem("user");
+  // const theUser =  userId ? userId.userid : user
+  // console.log(theUser);
+  
+
+  // const {
+  //   tableQueryResult: { data, isLoading, isError },
+  // } = useTable({
+  //   hasPagination: false,
+    
+  // });
+  
   // const data = await getAllTransaction();
-
-
-  const { data: user } = useGetIdentity();
 
 
   const [isOpenDepositAlert, setIsOpenDepositAlert] = useState(false);
@@ -76,6 +84,32 @@ const AllTransactions = () => {
 
 
   const [open, setOpen] = React.useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v1/transactions/user/${user}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+      
+        if (response.ok) {
+          const data = await response.json();
+        setData(data)
+        }
+        // Process and set the transactions in the component state or tableQueryResult
+    
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    
+    // Call the fetchData function to fetch transactions
+    fetchData();
+  },[user, open])
+
+  
   async function getRecentTransaction() {
     const response = await fetch(
       `http://localhost:8080/api/v1/transactions/recent`
@@ -205,7 +239,8 @@ const AllTransactions = () => {
   };
 
 
-  const allTransactions = data?.data ?? [];
+  // const allTransactions = data?.data ?? [];
+  // console.log(allTransactions)
 
 
   //if (isLoading) return <Typography>Loading ...</Typography>
@@ -364,6 +399,7 @@ const AllTransactions = () => {
               src={"data:image/jpeg;base64," + image}
               alt="pic"
             />
+          </DialogContentText>
 
 
             {recentTransaction &&
@@ -374,14 +410,16 @@ const AllTransactions = () => {
                 (acc: number, curr: number) => acc + curr,
                 0
               )
-              ? `You owe ${recentTransaction?.price -
+              ?<DialogContentText alignContent="center"> You owe ${recentTransaction?.price -
               recentTransaction?.moneyDeposited.reduce(
                 (acc: number, curr: number) => acc + curr,
                 0
               )
-              }`
-              : "Thank You! No outstanding balance remaining."}
+              }
           </DialogContentText>
+
+          : <DialogContentText alignContent="center"> "Thank You! No outstanding balance remaining. 
+          </DialogContentText>}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleToastClose}>OK</Button>
@@ -427,7 +465,7 @@ const AllTransactions = () => {
             //checkboxSelection
             onCellClick={(row) => handleRow(row)}
             getRowId={(row: any) => row._id}
-            rows={allTransactions}
+            rows={data}
             columns={columns}
             columnBuffer={3}
             sx={{
