@@ -5,7 +5,7 @@ import { getItems, addItem, deleteItem } from '../controllers/item.controller.js
 
 const router = express.Router();
 
-router.route('/').get(getItems);
+router.route('/:userId').get(getItems);
 router.route('/').post(addItem);
 router.route('/:id').delete(deleteItem);
 

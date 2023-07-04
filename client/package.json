@@ -35,7 +35,8 @@
     "build": "refine build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "refine": "refine"
+    "refine": "refine",
+    "Build": "react-scripts build"
   },
   "eslintConfig": {
     "extends": [

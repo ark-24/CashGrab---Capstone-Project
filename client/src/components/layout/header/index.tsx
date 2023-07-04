@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useGetIdentity } from "@pankod/refine-core";
 import {
   AppBar,
@@ -9,47 +9,88 @@ import {
   Avatar,
 } from "@pankod/refine-mui";
 import { DarkModeOutlined, LightModeOutlined } from "@mui/icons-material";
+import '../../../index.css'
 
 import { ColorModeContext } from "contexts";
 
+import { createTheme, ThemeProvider } from '@mui/material';
+const theme = createTheme({
+  typography: {
+    fontFamily: [
+      'Nunito Sans',
+      'cursive',
+    ].join(','),
+  },});
+
+
 export const Header: React.FC = () => {
   const { mode, setMode } = useContext(ColorModeContext);
+  const user = localStorage.getItem("user");
+  const [userData, setUserData] = useState<any>();
 
-  const { data: user } = useGetIdentity();
-  const shouldRenderHeader = true; // since we are using the dark/light toggle; we don't need to check if user is logged in or not.
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v1/users/${user}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
 
-  return shouldRenderHeader ? (
-    <AppBar color="default" position="sticky" elevation={0} sx={{
-      background: '#fcfcfc'}}>
+        if (response.ok) {
+          const data = await response.json();
+          setUserData(data);
+        }
+        // Process and set the transactions in the component state or tableQueryResult
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    // Call the fetchData function to fetch transactions
+    fetchData();
+  }, [user]);
+
+  return (
+    <AppBar color="default" position="sticky" elevation={0} sx={{ background: '#ffffff' }}>
       <Toolbar>
-        <Stack
+      <Stack
           direction="row"
           width="100%"
-          justifyContent="flex-end"
+          justifyContent="space-between" // Center the content horizontally
+          // alignItems="center"
+        >
+        <Stack
+          direction="row"
+          width="50%"
+          justifyContent="flex-start" // Center the content horizontally
           alignItems="center"
         >
-          {/* <IconButton
-            onClick={() => {
-              setMode();
-            }}
-          >
-            {mode === "dark" ? <LightModeOutlined /> : <DarkModeOutlined />}
-          </IconButton> */}
+          <ThemeProvider theme={theme}>
+          <Typography fontSize={26} fontWeight="700" sx={{ color: "red" }} variant="subtitle2">
+            Cash
+          </Typography>
+          <Typography fontSize={26} fontWeight="700" sx={{ color: "#F3EC0E" }} variant="subtitle2">
+            Grab
+          </Typography>
+          </ThemeProvider>
+        </Stack>
+
           <Stack
             direction="row"
+          width="50%"
             gap="16px"
             alignItems="center"
-            justifyContent="center"
+            justifyContent="end"
           >
-            {user?.name ? (
-              <Typography variant="subtitle2">{user?.name}</Typography>
-            ) : null}
-            {user?.avatar ? (
-              <Avatar src={user?.avatar} alt={user?.name} />
-            ) : null}
+            {userData?.name && (
+              <Typography justifyContent="right" variant="subtitle2">{userData?.name}</Typography>
+            )}
+            {userData?.avatar && (
+              <Avatar src={userData?.avatar} alt={userData?.name} />
+            )}
           </Stack>
-        </Stack>
+          </Stack>
       </Toolbar>
     </AppBar>
-  ) : null;
+  );
 };

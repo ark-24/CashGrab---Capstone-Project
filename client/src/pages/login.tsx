@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLogin } from "@pankod/refine-core";
 import { Container, Box } from "@pankod/refine-mui";
 
@@ -6,9 +6,15 @@ import { CredentialResponse } from "../interfaces/google";
 import { CustomButton } from "components";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
+import RegisterDialog from "./register";
+import SigninDialog from "./signin";
 
 export const Login: React.FC = () => {
   const { mutate: login } = useLogin<CredentialResponse>();
+  const [registerOpen, setRegisterOpen] = useState(false);
+  const [signinOpen, setSigninOpen] = useState(false);
+
+
 
   const GoogleButton = (): JSX.Element => {
     const divRef = useRef<HTMLDivElement>(null);
@@ -41,6 +47,22 @@ export const Login: React.FC = () => {
     return <div ref={divRef} />;
   };
 
+  function handleRegisterOpen(): void {
+    setRegisterOpen(true)
+  }
+
+  const handleRegisterClose = () => {
+    setRegisterOpen(false)
+  }
+
+  function handleSigninOpen(): void {
+    setSigninOpen(true)
+  }
+
+  const handleSigninClose = () => {
+    setSigninOpen(false)
+  }
+
   return (
     <Box
       component="div"
@@ -70,18 +92,16 @@ export const Login: React.FC = () => {
           <div>
             <img src="./PaymentPeers-nobg.png" alt="Refine Logo" />
           </div>
-          <Box mt={4}>
-            <GoogleButton />
-          </Box>
           {/* <Box mt={4}>
+            <GoogleButton />
+          </Box> */}
+          <Box mt={4}>
             <CustomButton
               title={"Register"}
               backgroundColor="#D2042D"
               color="#F3EC0E"
               icon={<AppRegistrationIcon />}
-              // handleClick={() => {
-              //   handleDeleteItem();
-              // }}
+              handleClick={handleRegisterOpen}
             />
           </Box>
           <Box mt={4}>
@@ -90,13 +110,18 @@ export const Login: React.FC = () => {
               backgroundColor="#D2042D"
               color="#F3EC0E"
               icon={<HowToRegIcon />}
+              handleClick={handleSigninOpen}
               // handleClick={() => {
               //   handleDeleteItem();
               // }}
             />
-          </Box> */}
+          </Box>
         </Box>
       </Container>
+    <RegisterDialog  isOpen={registerOpen} onClose={handleRegisterClose} />
+    <SigninDialog  isOpen={signinOpen} onClose={handleSigninClose} />
+
+
     </Box>
   );
 };

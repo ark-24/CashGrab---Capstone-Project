@@ -26,7 +26,9 @@ interface CreateIncomeDialogProps {
 }
 
 const AddEmployee = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
-  const { data: user } = useGetIdentity();
+  // const { data: user } = useGetIdentity();
+  const user = localStorage.getItem("user");
+
   const {
     refineCore: { onFinish, formLoading },
     register,
@@ -35,7 +37,6 @@ const AddEmployee = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
   } = useForm();
 
   const onFinishHandler = async (data: FieldValues) => {
-    console.log(data);
     try {
       await onFinish({
         firstName: data.firstName,

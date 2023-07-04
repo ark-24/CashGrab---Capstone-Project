@@ -1,54 +1,48 @@
-import { Box, Typography, Stack } from '@pankod/refine-mui'
-import React, { useState, useEffect } from 'react'
-import ReactApexChart from 'react-apexcharts'
-import { PieChartProps } from 'interfaces/home'
-import { Label } from '@mui/icons-material'
-
+import { Box, Typography, Stack } from '@pankod/refine-mui';
+import React, { useState, useEffect } from 'react';
+import ReactApexChart from 'react-apexcharts';
+import { PieChartProps } from 'interfaces/home';
+import { Label } from '@mui/icons-material';
 
 const PieChart = ({ title, colors }: PieChartProps) => {
+  const [myBills, setBills] = useState<any>(null);
+  const user = localStorage.getItem("user");
 
-  const [myBills, setBills] = useState<any>()
+  useEffect(() => {
+    const getTransaction = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v1/bills/${user}`);
+        const data = await response.json();
+        setBills(JSON.stringify(data));
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  const getTransaction = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/v1/bills/`);
-      const data = await response.json();
-      setBills(JSON.stringify(data));
-      //console.log(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // useEffect(() => {
-  //   getTransaction();
-
-
-  // }, [])
-
-  getTransaction();
+    getTransaction();
+  }, [user]);
 
 
   const obj = myBills && JSON.parse(myBills);
-  console.log(obj)
   const mySeries = obj && Object.values(obj);
-  console.log(mySeries);
-  let cashBalance
+  mySeries?.splice(0, 1);
+  let cashBalance;
   let total;
   let sum;
-  if (mySeries) {
-    mySeries.splice(0, 1)
-    cashBalance = mySeries.splice(5, 1)
-    mySeries.splice(6, 3)
-    mySeries.splice(5, 1)
+  let newTitle = "No cash";
+  if (myBills && myBills !== "") {
+    newTitle = title;
+  }
 
+  if (mySeries && mySeries.length > 0) {
+    mySeries?.splice(0, 1);
+    cashBalance = mySeries?.splice(5, 1)[0];
+    mySeries?.splice(6, 3);
+    mySeries?.splice(5, 1);
 
-    console.log(mySeries);
     sum = mySeries.reduce((acc: number, curr: number) => acc + curr, 0);
     total = `Total Cash in System: $${cashBalance}`;
   }
-
-
 
   return (
     <Box
@@ -64,29 +58,55 @@ const PieChart = ({ title, colors }: PieChartProps) => {
       borderRadius="15px"
       minHeight="110px"
       width="fit-content"
-
-
     >
-      <Stack direction="column" display="flex">
-        <Typography display="block" alignContent="left">{title}</Typography>
-        <Typography textAlign="left" fontSize={24} color="11142d" fontWeight={700} mt=
-          {1}> {sum}</Typography>
-      </Stack>
-      <ReactApexChart options={{
-        chart: { type: 'donut' },
-        colors,
-        legend: { show: false },
-        dataLabels: { enabled: true },
-        labels: [" $5 dollar bills", "$10 bills", "$20 bills", '$50 bills', "$100 bills"],
-      }}
-        series={mySeries}
-        labels={['50 dollar bills', " 5 dollar bills"]}
-        type="donut"
-      />
-      <Typography> {total}</Typography>
-
+      {cashBalance && cashBalance > 0 ? (
+        <>
+          <Stack direction="column" display="flex">
+            <Typography display="block" sx={{ fontFamily: "inherit" }} fontSize={26} alignContent="left">
+              {newTitle}
+            </Typography>
+            <Typography textAlign="left" fontSize={24} color="#11142d" variant="body2" fontWeight={700} mt={1}>
+              {sum}
+            </Typography>
+          </Stack>
+          <ReactApexChart
+            options={{
+              chart: { type: 'donut' },
+              colors,
+              legend: { show: false },
+              dataLabels: { enabled: true },
+              labels: [" $5 dollar bills", "$10 bills", "$20 bills", '$50 bills', "$100 bills"],
+            }}
+            series={mySeries}
+            type="donut"
+          />
+        </>
+      ) : (
+        <>
+          <Stack direction="column" display="flex">
+            <Typography display="block" sx={{ fontFamily: "inherit" }} fontSize={26} alignContent="left">
+              No cash 
+            </Typography>
+            <Typography textAlign="left" fontSize={24} color="#11142d" variant="body2" fontWeight={700} mt={1}>
+              0
+            </Typography>
+          </Stack>
+          <ReactApexChart
+            options={{
+              chart: { type: 'donut' },
+              colors: ["white"],
+              legend: { show: false },
+              // dataLabels: { enabled: true },
+              labels: ["0"],
+            }}
+            series={[1]}
+            type="donut"
+          />
+        </>
+      )}
+      <Typography fontSize={26}>{total}</Typography>
     </Box>
-  )
-}
+  );
+};
 
-export default PieChart
+export default PieChart;

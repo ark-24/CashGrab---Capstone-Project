@@ -23,6 +23,7 @@ import { FieldValues, useForm } from "@pankod/refine-react-hook-form";
 import { AddCircleOutline, Email } from "@mui/icons-material";
 import { CustomButton } from "components";
 import { io } from "socket.io-client";
+import { FormHelperText } from "@mui/material";
 
 
 interface CreateDialogProps {
@@ -38,15 +39,17 @@ const socket = io("http://localhost:8080");
 
 
 const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
-  const { data: user } = useGetIdentity();
+  // const { data: user } = useGetIdentity();
+  const user = localStorage.getItem("user")
 
 
-  const [price, setPrice] = useState<Number>();
+  const [price, setPrice] = useState<number>();
   const [selectedItem, setSelectedItem] = useState<any>();
   const [selectedEmployee, setSelectedEmployee] = useState<any>();
   const [selectedItems, setSelectedItems] = useState<{ [key: string]: number }>(
     {}
   );
+
   const [itemCounts, setItemCounts] = useState<
     {
       item: string;
@@ -57,14 +60,25 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
 
   const [itemData, setItemData] = useState<Array<any>>();
   const [employeeData, setEmployeeData] = useState<Array<any>>();
+  const [employeeError, setEmployeeError] = useState(false);
+  const [itemError, setItemError] = useState(false);
 
 
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedEmployee(""); // Reset the selected employee when the dialog is closed
+      setEmployeeError(false); // Reset the error state when the dialog is closed
+      setSelectedItems({}); // Reset the selected employee when the dialog is closed
+      setItemError(false);
+    }
+  }, [isOpen]);
 
 
   useEffect(() => {
     const getItems = async () => {
       const response = await fetch(
-        "http://localhost:8080/api/v1/management/items"
+        `http://localhost:8080/api/v1/items/${user}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -80,7 +94,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
   useEffect(() => {
     const getEmployees = async () => {
       const response = await fetch(
-        "http://localhost:8080/api/v1/employees"
+        `http://localhost:8080/api/v1/employees/${user}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -105,25 +119,27 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
 
   const handleItemChange = (event: SelectChangeEvent<any>) => {
     const selectedValues = event.target.value as string[];
-    // const {
-    //   target: { value },
-    // } = event.target.value a;
-    console.log("values: " + selectedValues);
+
+  
     const updatedSelectedItems: { [key: string]: number } = {};
     const updatedItemCounts = itemCounts;
-    // console.log(selectedItem);
-
+  
     if (updatedItemCounts && selectedValues) {
+      if (selectedItems) {
+        setItemError(true);
+      } else {
+        setItemError(false); // Set the error state to true
+      }
       updatedItemCounts.forEach((itemCount, i) => {
         let idx = selectedValues.findIndex((item: string) => item === itemCount.item);
         if (idx === -1) {
-          updatedItemCounts.splice(i, 1)
+          updatedItemCounts.splice(i, 1);
         }
-      })
-      setItemCounts(updatedItemCounts)
+      });
+      setItemCounts(updatedItemCounts);
     }
 
-
+  
     selectedValues.forEach((selectedValue) => {
       if (selectedValue in updatedSelectedItems) {
         updatedSelectedItems[selectedValue] += 1;
@@ -131,63 +147,39 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
         updatedSelectedItems[selectedValue] = 1;
       }
     });
-
-
+  
     setSelectedItems(updatedSelectedItems);
-    
-  };
+    setItemError(true)
 
+  };
+  
 
   const handleItemQuantity = (event: any, item: string) => {
-    console.log(event);
     const quantity = event.target.value;
-    console.log("handle item " + JSON.stringify(itemCounts))
-
-
-    console.log("quantity values: " + quantity);
     const updatedSelectedItems: {
       item: string;
       count: number;
     }[] = itemCounts;
 
-
     const idx = itemCounts.findIndex(itemWithCount => itemWithCount.item === item);
     if (idx === -1) {
       updatedSelectedItems.push({ item: item, count: quantity })
-      console.log("after push " + JSON.stringify(updatedSelectedItems))
     }
     else {
       updatedSelectedItems[idx].count = quantity
 
-
     }
-
-
-    //console.log("new item counts" + JSON.stringify(updatedSelectedItems))
-
-
     setItemCounts([...updatedSelectedItems]);
-    console.log("after set " + JSON.stringify(itemCounts))
-    // setSelectedItem(
-    //   selectedValues.map((selectedValue) =>
-    //     itemData?.find((item) => item.itemName === selectedValue)
-    //   )
-    // );
+    
   };
 
 
   useEffect(() => {
-    // ...
-
 
     return () => {
       setPrice(0); // Reset the price when the dialog is closed
     };
   }, []);
-
-
-  // ...
-
 
   const calculatePrice = () => {
     if (itemCounts && itemData) {
@@ -232,10 +224,12 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
 
 
   const onFinishHandler = async (data: FieldValues) => {
+    
+
     try {
       await onFinish({
         ...data,
-        email: user?.email,
+        email: Email,
         price: price,
         selectedItems: itemCounts,
         creator: user
@@ -270,16 +264,22 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               labelId="employee-select-label"
               label="Employee"
               fullWidth
+              
               color="info"
               displayEmpty
               {...register("employee", {
                 required: true,
+                // required: "Employee is required"
               })}
               onChange={(e) => {
                 const selectedValue = e.target.value;
                 const selectedEmployee = employeeData?.find((employee) => employee.itemName === selectedValue);
                 if (selectedEmployee) {
                   setSelectedEmployee(selectedEmployee);
+                  setEmployeeError(false);
+                } else {
+                  setSelectedEmployee(null); // Reset the selected employee
+                  setEmployeeError(true); // Set the error state to true
                 }
               }}
             //value={Object.keys(selectedItems)}
@@ -290,6 +290,9 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
                 </MenuItem>
               ))}
             </Select>
+  {!employeeError && (
+    <FormHelperText error>Employee is required</FormHelperText>
+  )}
 
 
             <InputLabel id="item-select-label" sx={{marginTop: "15px",}}>Item</InputLabel>
@@ -319,6 +322,9 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
                 </MenuItem>
               ))}
             </Select>
+            {!itemError && (
+    <FormHelperText error>Item is required</FormHelperText>
+  )}
 
 
             {Object.keys(selectedItems).map((item) => (
@@ -326,6 +332,8 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
                 key={item}
                 label={`${item} Quantity`}
                 fullWidth
+                error={ price !== undefined && price === 0 }
+                helperText={price === 0 && "Quantity must be greater than 0"}
                 sx={{marginTop: "5px"}}
                 type="number"
                 required={true}
@@ -342,6 +350,8 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               autoFocus
               id="price"
               label="Price"
+              error={!price}
+              helperText={price === 0 && "Price is required"}
               type="number"
               fullWidth
               value={price}
@@ -381,7 +391,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               label="Comments"
               multiline
               fullWidth
-              maxRows={2}
+              maxRows={1}
               {...register("details", {
                 required: false,
               })}

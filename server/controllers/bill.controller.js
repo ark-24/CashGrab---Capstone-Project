@@ -5,11 +5,12 @@ import mongoose from "mongoose";
 
 
 const getCurrentBillStatement = async(req,res) =>{
+    const userId = req.params.userId; 
 
 
     try {
 
-        const recentBills = await Bill.findOne({}).sort({ date: -1 }).exec();
+        const recentBills = await Bill.findOne({user: userId}).sort({ date: -1 }).exec();
         res.status(200).json(recentBills);
 
     } catch (error) {
@@ -21,12 +22,10 @@ const getCurrentBillStatement = async(req,res) =>{
 
 const createBillStatement = async(req,res) =>{
 
-    console.log("req body " +    JSON.stringify(req.body))
     try {
     
-        const {fiveDollarBills, tenDollarBills, twentyDollarBills, fiftyDollarBills, hundredDollarBills} = JSON.stringify(req.body);
+        const {fiveDollarBills, tenDollarBills, twentyDollarBills, fiftyDollarBills, hundredDollarBills, user} = JSON.stringify(req.body);
 
-        console.log(fiveDollarBills)
          //Start new session for atomic
 
          const session = await mongoose.startSession();
@@ -37,7 +36,7 @@ const createBillStatement = async(req,res) =>{
         if(!user) throw new Error('User not found')
         
         const newBalance = mostRecentTransaction ? (transactionTotal + mostRecentTransaction.cashBalance) : transactionTotal;
-        await Bill.deleteMany({})
+        // await Bill.deleteMany({})
 
         const newBillTransaction = await Bill.create({
             fiveDollarBills, 
@@ -47,12 +46,12 @@ const createBillStatement = async(req,res) =>{
             hundredDollarBills,
             transactionTotal,
             type,
+            user,
             cashBalance: newBalance,
             date: new Date(),
 
 
         })
-        console.log(newBillTransaction)
 
         //user.allTransactions.push(newTransaction._id);
 

@@ -4,30 +4,7 @@ import { useList } from '@pankod/refine-core'
 import { CustomButton, PieChart, TotalRevenue } from 'components'
 import { Box, Stack, Typography } from '@pankod/refine-mui'
 const Home = () => {
-  const [supportsBluetooth, setSupportsBluetooth] = useState(false);
-  const [isDisconnected, setIsDisconnected] = useState(true);
-  useEffect(() => {
-    if (navigator.bluetooth) {
-      setSupportsBluetooth(true);
-    }
-    console.log(supportsBluetooth)
-  }, []);
-
-
-  const onDisconnected = (event: { target: any }) => {
-    alert(`The device ${event.target} is disconnected`);
-    setIsDisconnected(true);
-  }
-
-  /**
-   * Update the value shown on the web page when a notification is
-   * received.
-   */
-  
-  /**
-   * Attempts to connect to a Bluetooth device and subscribe to
-   * battery level readings using the battery service.
-   */
+ 
 
   
   return (

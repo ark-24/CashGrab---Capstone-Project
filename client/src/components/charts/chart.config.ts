@@ -1,4 +1,5 @@
 import { ApexOptions } from "apexcharts";
+import moment from "moment";
 
 export const TotalRevenueSeries = [
   {
@@ -10,6 +11,14 @@ export const TotalRevenueSeries = [
   //   data: [95, 84, 72, 44, 108, 108, 47],
   // },
 ];
+
+let days = [];
+let today = moment();
+for (let i = 0; i < 7; i++) {
+   let day = moment(today).subtract(i, 'days');
+   days.push(day.format('MMMM Do'));
+}
+
 
 export const TotalRevenueOptions: ApexOptions = {
   chart: {
@@ -37,7 +46,7 @@ export const TotalRevenueOptions: ApexOptions = {
     width: 4,
   },
   xaxis: {
-    categories: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    categories: days.reverse()
   },
   yaxis: {
     title: {
@@ -54,7 +63,7 @@ export const TotalRevenueOptions: ApexOptions = {
   tooltip: {
     y: {
       formatter(val: number) {
-        return `$ ${val} thousand`;
+        return `$ ${val}`;
       },
     },
   },

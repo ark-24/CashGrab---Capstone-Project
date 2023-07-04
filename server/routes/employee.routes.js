@@ -5,7 +5,7 @@ import { getEmployees, addEmployee, deleteEmployee } from '../controllers/employ
 
 const router = express.Router();
 
-router.route('/').get(getEmployees);
+router.route('/:userId').get(getEmployees);
 router.route('/').post(addEmployee);
 router.route('/:id').delete(deleteEmployee);
 

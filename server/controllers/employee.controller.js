@@ -4,9 +4,10 @@ import Employee from "../mongodb/models/employees.js";
 import mongoose from "mongoose";
 
 const getEmployees = async (req, res) => {
-    const {user} = req.body
+    const userId = req.params.userId; 
+
   try {
-    const employees = await Employee.find({ user }).limit(req.query._end);
+    const employees = await Employee.find({ user: userId }).limit(req.query._end);
     res.status(200).json(employees);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -14,7 +15,6 @@ const getEmployees = async (req, res) => {
 };
 
 const addEmployee = async (req, res) => {
-  console.log(req.body);
 
   try {
     const { user, firstName, lastName, phoneNumber, email } = req.body;
@@ -32,10 +32,9 @@ const addEmployee = async (req, res) => {
       lastName,
       phoneNumber,
       email,
-      creator: user._id,
+      user: user,
       date: new Date(),
     });
-    console.log(newEmployee);
 
 
     await theUser.save({ session });

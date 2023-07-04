@@ -5,21 +5,35 @@ import moment from 'moment-timezone';
 
 import mongoose from "mongoose";
 
-const getAllTransactions = async(req,res) =>{
-    try {
-        const transactions = await Transaction.find({}).limit(req.query._end);
-        res.status(200).json(transactions);
+const getAllTransactions = async (req, res) => {
 
-        } catch (error) {
-        res.status(500).json({message: error.message})
-        
-    }
+  try {
+    const userId = req.params.userId; 
+
+    const transactions = await Transaction.find({  }).limit(req.query._end);
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
+
+const getTransactions = async (req, res) => {
+
+  try {
+    const userId = req.params.userId; 
+
+    const transactions = await Transaction.find({ creator: userId }).limit(req.query._end);
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 
 const getRecentTransaction = async(req,res) =>{
     try {
         const transaction = await Transaction.findOne({}).sort({ date: -1 }).exec();
-        //console.log(transaction);
         res.status(200).json(transaction);
 
         } catch (error) {
@@ -32,7 +46,6 @@ const getTransactionDetail = async(req,res) =>{};
 
 
 const createTransaction = async (req,res) =>{
-    console.log(req.body)
 
     try {
     
@@ -44,13 +57,11 @@ const createTransaction = async (req,res) =>{
 
         session.startTransaction(); //ensures atomic
 
-        const user = await User.findOne({creator}).session(session);
+        const user = await User.findOne({_id: creator}).session(session);
         if(!user) throw new Error('User not found')
        
 
         const pstDate = moment().tz('America/Los_Angeles');
-
-        console.log(pstDate)
 
         const newTransaction = await Transaction.create({
          employee,
@@ -63,7 +74,6 @@ const createTransaction = async (req,res) =>{
          date: pstDate,
 
         })
-        console.log(newTransaction)
 
         user.allTransactions.push(newTransaction._id);
 
@@ -137,4 +147,5 @@ export{
     updateTransaction,
     deleteTransaction,
     getRecentTransaction,
+    getTransactions
 }

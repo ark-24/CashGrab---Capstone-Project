@@ -39,6 +39,7 @@ import CreateTransaction from "pages/createTransaction";
 import AllIncomeStatements from "pages/allIncomeStatements";
 import ManagePage from "pages/managePage";
 
+
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
   const token = localStorage.getItem("token");

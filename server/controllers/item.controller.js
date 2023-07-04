@@ -4,17 +4,17 @@ import Item from "../mongodb/models/items.js";
 import mongoose from "mongoose";
 
 const getItems = async (req, res) => {
-    const {user} = req.body
+    const userId = req.params.userId; 
+
   try {
-    const employees = await Item.find({ user }).limit(req.query._end);
-    res.status(200).json(employees);
+    const items = await Item.find({ user: userId }).limit(req.query._end);
+    res.status(200).json(items);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 const addItem = async (req, res) => {
-  console.log(req.body);
 
   try {
     const { user, itemName, price } = req.body;
@@ -30,10 +30,9 @@ const addItem = async (req, res) => {
     const newItem = await Item.create({
       itemName,
       price,
-      creator: user._id,
+      user,
       date: new Date(),
     });
-    console.log(newItem);
 
 
     await theUser.save({ session });
@@ -47,10 +46,8 @@ const addItem = async (req, res) => {
 const deleteItem = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log("id " + id)
 
     const itemToDelete = await Item.findById(id).populate("user");
-    console.log(itemToDelete);
     if (!itemToDelete) throw new Error("Item not found");
 
     const session = await mongoose.startSession();
