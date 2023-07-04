@@ -24,6 +24,7 @@ const createIncomeStatement = async(req,res) =>{
 
 
     try {
+
     
         const {user,fiveDollarBills, tenDollarBills, twentyDollarBills, fiftyDollarBills, hundredDollarBills,transactionTotal,type} = req.body;
 
@@ -38,7 +39,7 @@ const createIncomeStatement = async(req,res) =>{
 
         //const newIncomeTransaction = 
        
-
+      
         const mostRecentBill = await Bill.findOne({}).sort({ date: -1 }).exec();
 
         if (type === "Withdrawal") {
@@ -46,13 +47,13 @@ const createIncomeStatement = async(req,res) =>{
           
             const currentCashBalance = mostRecentBill ? mostRecentBill.cashBalance : 0;
             const totalWithdrawalAmount = Number(transactionTotal);
+            console.log("l51");
           
             if (currentCashBalance < totalWithdrawalAmount) {
               res.status(500).json({ message: "Insufficient funds" });
               return;
             }
 
-            
           
             let totalFiveDollarBills = mostRecentBill ? mostRecentBill.totalFiveDollarBills : 0;
             let totalTenDollarBills = mostRecentBill ? mostRecentBill.totalTenDollarBills : 0;
@@ -84,21 +85,7 @@ const createIncomeStatement = async(req,res) =>{
               res.status(500).json({ message: "Insufficient bills available to withdraw" });
               return;
             }
-            
-            await Income.create({
-              fiveDollarBills, 
-              tenDollarBills, 
-              twentyDollarBills,
-              fiftyDollarBills,
-              hundredDollarBills,
-              transactionTotal,
-              type,
-              user,
-              date: new Date(),
-  
-  
-          })
-  
+
             
           
             let remainingWithdrawalAmount = totalWithdrawalAmount;
@@ -159,6 +146,19 @@ const createIncomeStatement = async(req,res) =>{
         })
 
     }
+    await Income.create({
+      fiveDollarBills, 
+      tenDollarBills, 
+      twentyDollarBills,
+      fiftyDollarBills,
+      hundredDollarBills,
+      transactionTotal,
+      type,
+      user,
+      date: new Date(),
+
+
+  })
         await theUser.save({session})
         await session.commitTransaction();
         res.status(200).json({message: 'Income Transaction executed successfully'})

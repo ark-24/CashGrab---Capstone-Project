@@ -29,7 +29,7 @@ const ManagePage = () => {
   useEffect(() => {
     const fetchEmployeeData = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/v1/employees/${user}`, {
+        const response = await fetch(`http://127.0.0.1:8080/api/v1/employees/${user}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -47,7 +47,7 @@ const ManagePage = () => {
 
     const fetchItemData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/items/${user}`, {
+      const response = await fetch(`http://127.0.0.1:8080/api/v1/items/${user}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });

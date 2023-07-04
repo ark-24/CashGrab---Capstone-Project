@@ -25,23 +25,17 @@ import { CustomButton } from "components";
 import { io } from "socket.io-client";
 import { FormHelperText } from "@mui/material";
 
-
 interface CreateDialogProps {
   isOpen: boolean;
   onClose: () => void;
   itemData?: any;
 }
 
-
-const socket = io("http://localhost:8080");
-
-
-
+const socket = io("http://127.0.0.1:8080");
 
 const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
   // const { data: user } = useGetIdentity();
-  const user = localStorage.getItem("user")
-
+  const user = localStorage.getItem("user");
 
   const [price, setPrice] = useState<number>();
   const [selectedItem, setSelectedItem] = useState<any>();
@@ -57,13 +51,10 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
     }[]
   >([]);
 
-
   const [itemData, setItemData] = useState<Array<any>>();
   const [employeeData, setEmployeeData] = useState<Array<any>>();
   const [employeeError, setEmployeeError] = useState(false);
   const [itemError, setItemError] = useState(false);
-
-
 
   useEffect(() => {
     if (!isOpen) {
@@ -74,11 +65,10 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
     }
   }, [isOpen]);
 
-
   useEffect(() => {
     const getItems = async () => {
       const response = await fetch(
-        `http://localhost:8080/api/v1/items/${user}`
+        `http://127.0.0.1:8080/api/v1/items/${user}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -86,15 +76,13 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
       }
     };
 
-
     getItems();
   }, []); // empty dependency array to run only once on mount
-
 
   useEffect(() => {
     const getEmployees = async () => {
       const response = await fetch(
-        `http://localhost:8080/api/v1/employees/${user}`
+        `http://127.0.0.1:8080/api/v1/employees/${user}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -102,28 +90,23 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
       }
     };
 
-
     getEmployees();
   }, []); // empty dependency array to run only once on mount
 
-
   useEffect(() => {
     if (isOpen === false) {
-      setPrice(0)
-      setItemCounts([])
-      setSelectedItems({})
+      setPrice(0);
+      setItemCounts([]);
+      setSelectedItems({});
     }
-
-
-  }, [isOpen])
+  }, [isOpen]);
 
   const handleItemChange = (event: SelectChangeEvent<any>) => {
     const selectedValues = event.target.value as string[];
 
-  
     const updatedSelectedItems: { [key: string]: number } = {};
     const updatedItemCounts = itemCounts;
-  
+
     if (updatedItemCounts && selectedValues) {
       if (selectedItems) {
         setItemError(true);
@@ -131,7 +114,9 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
         setItemError(false); // Set the error state to true
       }
       updatedItemCounts.forEach((itemCount, i) => {
-        let idx = selectedValues.findIndex((item: string) => item === itemCount.item);
+        let idx = selectedValues.findIndex(
+          (item: string) => item === itemCount.item
+        );
         if (idx === -1) {
           updatedItemCounts.splice(i, 1);
         }
@@ -139,7 +124,6 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
       setItemCounts(updatedItemCounts);
     }
 
-  
     selectedValues.forEach((selectedValue) => {
       if (selectedValue in updatedSelectedItems) {
         updatedSelectedItems[selectedValue] += 1;
@@ -147,12 +131,10 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
         updatedSelectedItems[selectedValue] = 1;
       }
     });
-  
-    setSelectedItems(updatedSelectedItems);
-    setItemError(true)
 
+    setSelectedItems(updatedSelectedItems);
+    setItemError(true);
   };
-  
 
   const handleItemQuantity = (event: any, item: string) => {
     const quantity = event.target.value;
@@ -161,21 +143,18 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
       count: number;
     }[] = itemCounts;
 
-    const idx = itemCounts.findIndex(itemWithCount => itemWithCount.item === item);
+    const idx = itemCounts.findIndex(
+      (itemWithCount) => itemWithCount.item === item
+    );
     if (idx === -1) {
-      updatedSelectedItems.push({ item: item, count: quantity })
-    }
-    else {
-      updatedSelectedItems[idx].count = quantity
-
+      updatedSelectedItems.push({ item: item, count: quantity });
+    } else {
+      updatedSelectedItems[idx].count = quantity;
     }
     setItemCounts([...updatedSelectedItems]);
-    
   };
 
-
   useEffect(() => {
-
     return () => {
       setPrice(0); // Reset the price when the dialog is closed
     };
@@ -199,21 +178,15 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
     return 0;
   };
 
-
   useEffect(() => {
     setPrice(calculatePrice());
   }, [itemCounts, itemData]);
 
-
   // ...
-
-
-
 
   useEffect(() => {
     console.log("price is " + price);
   }, [price]);
-
 
   const {
     refineCore: { onFinish, formLoading },
@@ -222,18 +195,28 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
     reset,
   } = useForm();
 
-
   const onFinishHandler = async (data: FieldValues) => {
-    
+    const postData = {
+      ...data,
+      email: Email,
+      price: price,
+      selectedItems: itemCounts,
+      creator: user,
+    };
 
     try {
-      await onFinish({
-        ...data,
-        email: Email,
-        price: price,
-        selectedItems: itemCounts,
-        creator: user
-      });
+      const response = await fetch(
+        `http://127.0.0.1:8080/api/v1/transactions`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(postData),
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+      }
+
       onClose(); // close dialog on success
       reset();
     } catch (error) {
@@ -243,9 +226,6 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
     socket.emit("json", `{"cost":${price}}`);
   };
 
-
-
-
   return (
     <>
       <form onSubmit={handleSubmit(onFinishHandler)}>
@@ -254,7 +234,9 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
           <DialogContent>
             <DialogContentText>Enter Transaction Details</DialogContentText>
 
-            <InputLabel id="employee-select-label" sx={{marginTop: "15px",}}>Employee</InputLabel>
+            <InputLabel id="employee-select-label" sx={{ marginTop: "15px" }}>
+              Employee
+            </InputLabel>
             <Select
               variant="outlined"
               sx={{
@@ -264,7 +246,6 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               labelId="employee-select-label"
               label="Employee"
               fullWidth
-              
               color="info"
               displayEmpty
               {...register("employee", {
@@ -273,7 +254,9 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               })}
               onChange={(e) => {
                 const selectedValue = e.target.value;
-                const selectedEmployee = employeeData?.find((employee) => employee.itemName === selectedValue);
+                const selectedEmployee = employeeData?.find(
+                  (employee) => employee.itemName === selectedValue
+                );
                 if (selectedEmployee) {
                   setSelectedEmployee(selectedEmployee);
                   setEmployeeError(false);
@@ -282,21 +265,24 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
                   setEmployeeError(true); // Set the error state to true
                 }
               }}
-            //value={Object.keys(selectedItems)}
+              //value={Object.keys(selectedItems)}
             >
               {employeeData?.map((employee: any) => (
-                <MenuItem key={employee._id} value={`${employee.firstName} ${employee.lastName}`}>
+                <MenuItem
+                  key={employee._id}
+                  value={`${employee.firstName} ${employee.lastName}`}
+                >
                   {`${employee.firstName} ${employee.lastName}`}
                 </MenuItem>
               ))}
             </Select>
-  {!employeeError && (
-    <FormHelperText error>Employee is required</FormHelperText>
-  )}
+            {!employeeError && (
+              <FormHelperText error>Employee is required</FormHelperText>
+            )}
 
-
-            <InputLabel id="item-select-label" sx={{marginTop: "15px",}}>Item</InputLabel>
-
+            <InputLabel id="item-select-label" sx={{ marginTop: "15px" }}>
+              Item
+            </InputLabel>
 
             <Select
               variant="outlined"
@@ -323,25 +309,23 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               ))}
             </Select>
             {!itemError && (
-    <FormHelperText error>Item is required</FormHelperText>
-  )}
-
+              <FormHelperText error>Item is required</FormHelperText>
+            )}
 
             {Object.keys(selectedItems).map((item) => (
               <TextField
                 key={item}
                 label={`${item} Quantity`}
                 fullWidth
-                error={ price !== undefined && price === 0 }
+                error={price !== undefined && price === 0}
                 helperText={price === 0 && "Quantity must be greater than 0"}
-                sx={{marginTop: "5px"}}
+                sx={{ marginTop: "5px" }}
                 type="number"
                 required={true}
-                onChange={quantity => handleItemQuantity(quantity, item)}
+                onChange={(quantity) => handleItemQuantity(quantity, item)}
                 variant="standard"
               />
             ))}
-
 
             <TextField
               sx={{
@@ -359,10 +343,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               {...register("price", {
                 required: true,
               })}
-
-
             />
-
 
             <TextField
               sx={{
@@ -374,12 +355,11 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               label="Customer Email"
               fullWidth
               variant="standard"
-              inputProps={{ inputMode: 'text' }}
+              inputProps={{ inputMode: "text" }}
               {...register("customerEmail", {
                 required: false,
               })}
             />
-
 
             <TextField
               sx={{
@@ -389,9 +369,7 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
               id="info"
               placeholder="Extra Information"
               label="Comments"
-              multiline
               fullWidth
-              maxRows={1}
               {...register("details", {
                 required: false,
               })}
@@ -422,6 +400,3 @@ const CreateTransaction = ({ isOpen, onClose }: CreateDialogProps) => {
 };
 // onClick={onFinishHandler}
 export default CreateTransaction;
-
-
-

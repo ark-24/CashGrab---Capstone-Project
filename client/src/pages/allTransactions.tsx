@@ -46,7 +46,7 @@ interface Transaction {
 }
 
 
-const socket = io("http://localhost:8080");
+const socket = io("http://127.0.0.1:8080");
 
 
 const AllTransactions = () => {
@@ -74,7 +74,7 @@ const AllTransactions = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/v1/transactions/user/${user}`, {
+        const response = await fetch(`http://127.0.0.1:8080/api/v1/transactions/user/${user}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -98,7 +98,7 @@ const AllTransactions = () => {
   
   async function getRecentTransaction() {
     const response = await fetch(
-      `http://localhost:8080/api/v1/transactions/recent`
+      `http://127.0.0.1:8080/api/v1/transactions/recent`
     );
     if (response.ok) {
       const data = await response.json();
@@ -118,7 +118,7 @@ const AllTransactions = () => {
       type: "Deposit",
     };
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/income`, {
+      const response = await fetch(`http://127.0.0.1:8080/api/v1/income`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(createData),
@@ -145,7 +145,7 @@ const AllTransactions = () => {
           id: myTransaction._id,
         };
         const patchResponse = await fetch(
-          `http://localhost:8080/api/v1/transactions/recent/${myTransaction?._id}`,
+          `http://127.0.0.1:8080/api/v1/transactions/recent/${myTransaction?._id}`,
           {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
@@ -224,7 +224,7 @@ const AllTransactions = () => {
     {
       field: "item",
       headerName: "Item",
-      width: 250,
+      width: 335,
       editable: false,
       headerAlign: "center",
       align: "center",
@@ -278,7 +278,7 @@ const AllTransactions = () => {
       field: "details",
       headerName: "Comments",
       type: "string",
-      width: 350,
+      width: 325,
       editable: false,
       headerAlign: "center",
       align: "center",

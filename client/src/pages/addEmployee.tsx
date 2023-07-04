@@ -37,14 +37,16 @@ const AddEmployee = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
   } = useForm();
 
   const onFinishHandler = async (data: FieldValues) => {
-    try {
-      await onFinish({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        user: user,
-      });
+    const postData = {...data, user: user}
+      try {
+        const response = await fetch(`http://127.0.0.1:8080/api/v1/employees`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(postData),
+          });
+          if (response.ok) {
+            const data = await response.json();
+          }
       onClose();
       reset();
     } catch (error) {

@@ -22,19 +22,25 @@ const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => 
     },[onClose])
 
     const onFinishHandler = async (data: FieldValues) => {
-        try {
-            await onFinish({
-                fiveDollarBills: Number(data.fiveDollarBills),
-                tenDollarBills: Number(data.tenDollarBills),
-                twentyDollarBills: Number(data.twentyDollarBills),
-                fiftyDollarBills: Number(data.fiftyDollarBills),
-                hundredDollarBills: Number(data.hundredDollarBills),
-                transactionTotal: (5 * data.fiveDollarBills + 10 * data.tenDollarBills + 20 * data.twentyDollarBills + 50 * data.fiftyDollarBills + 100 * data.hundredDollarBills),
-                user: user,
-                type: data.type
-
-
-            });
+       const postData = {
+        fiveDollarBills: Number(data.fiveDollarBills),
+        tenDollarBills: Number(data.tenDollarBills),
+        twentyDollarBills: Number(data.twentyDollarBills),
+        fiftyDollarBills: Number(data.fiftyDollarBills),
+        hundredDollarBills: Number(data.hundredDollarBills),
+        transactionTotal: (5 * data.fiveDollarBills + 10 * data.tenDollarBills + 20 * data.twentyDollarBills + 50 * data.fiftyDollarBills + 100 * data.hundredDollarBills),
+        user: user,
+        type: data.type
+       } 
+            try {
+                const response = await fetch("http://127.0.0.1:8080/api/v1/income", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(postData),
+                  });
+                  if (response.ok) {
+                    const data = await response.json();
+                  }
             onClose();
             reset();
         } catch (error) {
