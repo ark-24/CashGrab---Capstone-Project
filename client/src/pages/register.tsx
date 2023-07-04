@@ -40,7 +40,6 @@ const RegisterDialog = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
 
 
   const onFinishHandler = async (data: FieldValues) => {
-    console.log(data);
     try {
    
       const createUser = {
@@ -55,10 +54,15 @@ const RegisterDialog = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(JSON.stringify(data));
+        console.log(data);
+        
+        if(data.exists)
+        {
+          console.log("exists")
+        }
+
       }
     //   login(response);
-    //   navigate("/transactions");
       onClose();
       reset();
     } catch (error) {

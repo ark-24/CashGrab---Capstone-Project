@@ -37,7 +37,6 @@ const AddEmployee = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
   } = useForm();
 
   const onFinishHandler = async (data: FieldValues) => {
-    console.log(data);
     try {
       await onFinish({
         firstName: data.firstName,

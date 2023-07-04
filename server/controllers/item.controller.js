@@ -5,11 +5,9 @@ import mongoose from "mongoose";
 
 const getItems = async (req, res) => {
     const userId = req.params.userId; 
-    console.log("hit ep");
 
   try {
     const items = await Item.find({ user: userId }).limit(req.query._end);
-    console.log(items);
     res.status(200).json(items);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -17,7 +15,6 @@ const getItems = async (req, res) => {
 };
 
 const addItem = async (req, res) => {
-  console.log(req.body);
 
   try {
     const { user, itemName, price } = req.body;
@@ -36,7 +33,6 @@ const addItem = async (req, res) => {
       user,
       date: new Date(),
     });
-    console.log(newItem);
 
 
     await theUser.save({ session });
@@ -50,10 +46,8 @@ const addItem = async (req, res) => {
 const deleteItem = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log("id " + id)
 
     const itemToDelete = await Item.findById(id).populate("user");
-    console.log(itemToDelete);
     if (!itemToDelete) throw new Error("Item not found");
 
     const session = await mongoose.startSession();

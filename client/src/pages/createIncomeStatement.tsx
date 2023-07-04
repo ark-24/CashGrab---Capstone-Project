@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@pankod/refine-mui';
 import { useGetIdentity } from '@pankod/refine-core';
 import { FieldValues, useForm } from '@pankod/refine-react-hook-form';
@@ -17,10 +17,11 @@ const CreateIncomeStatement = ({ isOpen, onClose }: CreateIncomeDialogProps) => 
     const user = localStorage.getItem("user");
 
     const { refineCore: { onFinish, formLoading }, register, handleSubmit, reset } = useForm();
-
+    useEffect(()=> {
+        reset()
+    },[onClose])
 
     const onFinishHandler = async (data: FieldValues) => {
-        console.log(data);
         try {
             await onFinish({
                 fiveDollarBills: Number(data.fiveDollarBills),

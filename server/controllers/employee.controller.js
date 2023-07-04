@@ -15,7 +15,6 @@ const getEmployees = async (req, res) => {
 };
 
 const addEmployee = async (req, res) => {
-  console.log(req.body);
 
   try {
     const { user, firstName, lastName, phoneNumber, email } = req.body;
@@ -36,7 +35,6 @@ const addEmployee = async (req, res) => {
       user: user,
       date: new Date(),
     });
-    console.log(newEmployee);
 
 
     await theUser.save({ session });

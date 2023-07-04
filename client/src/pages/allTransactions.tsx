@@ -51,22 +51,8 @@ const socket = io("http://localhost:8080");
 
 const AllTransactions = () => {
   const { data: userId } = useGetIdentity();
-  // console.log(user)
   const [data, setData] = useState<any[]>([])
   const user = localStorage.getItem("user");
-  // const theUser =  userId ? userId.userid : user
-  // console.log(theUser);
-  
-
-  // const {
-  //   tableQueryResult: { data, isLoading, isError },
-  // } = useTable({
-  //   hasPagination: false,
-    
-  // });
-  
-  // const data = await getAllTransaction();
-
 
   const [isOpenDepositAlert, setIsOpenDepositAlert] = useState(false);
   const [depositAmount, setDepositAmount] = useState(0);
@@ -107,7 +93,7 @@ const AllTransactions = () => {
     
     // Call the fetchData function to fetch transactions
     fetchData();
-  },[user, open])
+  },[user, open, isOpenDepositAlert])
 
   
   async function getRecentTransaction() {
@@ -117,12 +103,10 @@ const AllTransactions = () => {
     if (response.ok) {
       const data = await response.json();
       setRecentTransaction(data);
-      // console.log(JSON.stringify(data));
       return data;
     }
   }
   async function handleIncomeDeposit(depositAmt: number) {
-    console.log("depositAmt in handleIncome" + depositAmt);
     const createData = {
       fiveDollarBills: depositAmt === 5 ? 1 : 0,
       tenDollarBills: depositAmt === 10 ? 1 : 0,
@@ -141,7 +125,6 @@ const AllTransactions = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(JSON.stringify(data));
         return data;
       }
     } catch (error) {
@@ -155,14 +138,12 @@ const AllTransactions = () => {
       setIsLoading(true);
       const myTransaction = await getRecentTransaction();
       if (myTransaction !== null && myTransaction !== undefined) {
-        console.log("depositvalue before " + depositAmt);
         const amountDeposited = myTransaction.moneyDeposited;
         const newAmountDeposited = [...amountDeposited, depositAmt];
         const updateData = {
           moneyDeposited: newAmountDeposited,
           id: myTransaction._id,
         };
-        console.log("update " + JSON.stringify(updateData));
         const patchResponse = await fetch(
           `http://localhost:8080/api/v1/transactions/recent/${myTransaction?._id}`,
           {
@@ -173,7 +154,6 @@ const AllTransactions = () => {
         );
         if (patchResponse.ok) {
           const patchData = await patchResponse.json();
-          console.log("Item updated:", patchData);
           await getRecentTransaction(); // update recentTransaction state after the patch request
         } else {
           console.error("Error updating item:", patchResponse.status);
@@ -189,19 +169,13 @@ const AllTransactions = () => {
 
 
   async function handleResult(data: any) {
-    console.log(`data received in front end: ${data} `);
     setDepositAmount(data.inserted);
-    console.log("data obj " + JSON.stringify(data));
-    console.log("inserted " + depositAmount);
     await setRecentDeposit(data.inserted);
     await handleIncomeDeposit(data.inserted);
   }
 
 
   async function handleImage(data: any) {
-    console.log(`handle image in front end: ${data} `);
-    //const imageBuffer = Buffer.from(data, 'base64');
-    console.log(data);
     setImage(data);
   }
 
@@ -237,15 +211,6 @@ const AllTransactions = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
-
-  // const allTransactions = data?.data ?? [];
-  // console.log(allTransactions)
-
-
-  //if (isLoading) return <Typography>Loading ...</Typography>
-  //if (isError) return <Typography>Error ...</Typography>
-
 
   const columns: GridColDef[] = [
     {
@@ -290,10 +255,7 @@ const AllTransactions = () => {
       headerAlign: "center",
       align: "center",
       valueGetter: (params: GridValueGetterParams) => {
-        //const moneyDeposited = params.getValue('moneyDeposited', field: 'moneyDeposited',) as number[];
-        //const total = moneyDeposited.reduce((acc, curr) => acc + curr, 0);
-        // console.log(Object.entries(params.row))
-        // console.log(Object.values(params.row))
+        
         return `${Object?.values(params.row)[1]?.reduce(
           (acc: any, curr: any) => acc + curr,
           0
@@ -301,7 +263,6 @@ const AllTransactions = () => {
       },
 
     },
-    //selected.splice(selected.findIndex((s) => s === newValue), 1);
 
 
     {
@@ -350,7 +311,7 @@ const AllTransactions = () => {
 
 
     setIsOpenDepositAlert(false);
-    window.location.reload();
+    // window.location.reload();
   };
   const handleDeleteTransaction = () => {
     if (selectedRow) {
@@ -374,7 +335,6 @@ const AllTransactions = () => {
 
   function handleRow(row: any) {
     setSelectedRow(row.id)
-    console.log(typeof (row.id))
 
 
   }
@@ -418,7 +378,7 @@ const AllTransactions = () => {
               }
           </DialogContentText>
 
-          : <DialogContentText alignContent="center"> "Thank You! No outstanding balance remaining. 
+          : <DialogContentText alignContent="center"> Thank You! No outstanding balance remaining. 
           </DialogContentText>}
         </DialogContent>
         <DialogActions>
@@ -471,18 +431,6 @@ const AllTransactions = () => {
             sx={{
               backgroundColor: "#ffffff",
               flex: 1
-              // "& .MuiDataGrid-columnHeaderTitle": {
-              //   whiteSpace: "normal",
-              //   lineHeight: "normal"
-              // },
-              // "& .MuiDataGrid-columnHeader": {
-              //   // Forced to use important since overriding inline styles
-              //   height: "unset !important"
-              // },
-              // "& .MuiDataGrid-columnHeaders": {
-              //   // Forced to use important since overriding inline styles
-              //   maxHeight: "168px !important"
-              // }
             }}
           />
         </Box>

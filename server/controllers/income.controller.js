@@ -36,21 +36,8 @@ const createIncomeStatement = async(req,res) =>{
         const theUser = await User.findOne({user}).session(session);
         if(!user) throw new Error('User not found')
 
-
-        const newIncomeTransaction = await Income.create({
-            fiveDollarBills, 
-            tenDollarBills, 
-            twentyDollarBills,
-            fiftyDollarBills,
-            hundredDollarBills,
-            transactionTotal,
-            type,
-            user,
-            date: new Date(),
-
-
-        })
-
+        //const newIncomeTransaction = 
+       
 
         const mostRecentBill = await Bill.findOne({}).sort({ date: -1 }).exec();
 
@@ -64,12 +51,55 @@ const createIncomeStatement = async(req,res) =>{
               res.status(500).json({ message: "Insufficient funds" });
               return;
             }
+
+            
           
             let totalFiveDollarBills = mostRecentBill ? mostRecentBill.totalFiveDollarBills : 0;
             let totalTenDollarBills = mostRecentBill ? mostRecentBill.totalTenDollarBills : 0;
             let totalTwentyDollarBills = mostRecentBill ? mostRecentBill.totalTwentyDollarBills : 0;
             let totalFiftyDollarBills = mostRecentBill ? mostRecentBill.totalFiftyDollarBills : 0;
             let totalHundredDollarBills = mostRecentBill ? mostRecentBill.totalHundredDollarBills : 0;
+
+            if (totalFiveDollarBills < fiveDollarBills) {
+              res.status(500).json({ message: "Insufficient bills available to withdraw" });
+              return;
+            }
+            
+            if (totalTenDollarBills < tenDollarBills) {
+              res.status(500).json({ message: "Insufficient bills available to withdraw" });
+              return;
+            }
+
+            if (totalTwentyDollarBills < twentyDollarBills) {
+              res.status(500).json({ message: "Insufficient bills available to withdraw" });
+              return;
+            }
+
+            if (totalFiftyDollarBills < fiftyDollarBills) {
+              res.status(500).json({ message: "Insufficient bills available to withdraw" });
+              return;
+            }
+
+            if (totalHundredDollarBills < hundredDollarBills) {
+              res.status(500).json({ message: "Insufficient bills available to withdraw" });
+              return;
+            }
+            
+            await Income.create({
+              fiveDollarBills, 
+              tenDollarBills, 
+              twentyDollarBills,
+              fiftyDollarBills,
+              hundredDollarBills,
+              transactionTotal,
+              type,
+              user,
+              date: new Date(),
+  
+  
+          })
+  
+            
           
             let remainingWithdrawalAmount = totalWithdrawalAmount;
           
@@ -97,7 +127,8 @@ const createIncomeStatement = async(req,res) =>{
           
             const newCashBalance = currentCashBalance - totalWithdrawalAmount;
           
-            const newBillTransaction = await Bill.create({
+            //const newBillTransaction =
+             await Bill.create({
               totalFiveDollarBills,
               totalTenDollarBills,
               totalTwentyDollarBills,
@@ -114,8 +145,8 @@ const createIncomeStatement = async(req,res) =>{
 
         const newBalance = mostRecentBill ? (Number(transactionTotal) + Number(mostRecentBill?.cashBalance)) : Number(transactionTotal);
 
-
-        const newBillTransaction = await Bill.create({
+            //const newBillTransaction = 
+        await Bill.create({
             totalFiveDollarBills: mostRecentBill ? Number( mostRecentBill.totalFiveDollarBills) + Number(fiveDollarBills ): Number(fiveDollarBills), 
             totalTenDollarBills: mostRecentBill ? Number(mostRecentBill.totalTenDollarBills) + Number(tenDollarBills) : Number(tenDollarBills),  
             totalTwentyDollarBills: mostRecentBill ? Number(mostRecentBill.totalTwentyDollarBills) + Number(twentyDollarBills) : Number(twentyDollarBills),
@@ -128,11 +159,8 @@ const createIncomeStatement = async(req,res) =>{
         })
 
     }
-    // await Income.deleteMany({})
-    // await Bill.deleteMany({})
         await theUser.save({session})
         await session.commitTransaction();
-        //console.log(newBillTransaction)
         res.status(200).json({message: 'Income Transaction executed successfully'})
     } catch (error) {
         res.status(500).json({message: error.message})
@@ -142,42 +170,44 @@ const createIncomeStatement = async(req,res) =>{
 
 };
 const getIncomePerDay = async (req, res) => {
-  const userId = req.params.userId; 
-  console.log("hit income")
+  const userId = mongoose.Types.ObjectId.createFromHexString(req.params.userId);
+  
   try {
-    const startOfWeek = moment().tz("America/Los_Angeles").startOf("isoWeek");
-    const endOfWeek = moment().tz("America/Los_Angeles").endOf("isoWeek");
+    const startDate = moment().subtract(7, 'days').startOf('day').tz("America/Los_Angeles");
+    const endDate = moment().endOf('day').tz("America/Los_Angeles");
 
     const incomePerDay = await Income.aggregate([
       {
         $match: {
+          type: "Deposit",
           user: userId,
-          date: { $gte: startOfWeek.toDate(), $lte: endOfWeek.toDate() },
+          date: { $gte: startDate.toDate(), $lte: endDate.toDate() },
         },
       },
       {
         $group: {
-          _id: { $dayOfWeek: "$date" },
-          totalIncome: { $sum: "$transactionTotal" },
+          _id: { $dateToString: { format: "%Y-%m-%d", date: { $toDate: { $subtract: ["$date", 8 * 60 * 60000] } } } },
+          totalIncome: { $sum: "$transactionTotal"  },
+
         },
       },
       {
         $sort: { _id: 1 },
       },
     ]);
-    console.log(incomePerDay)
-    const incomeArray = new Array(7).fill(0);
-    incomePerDay.forEach((income) => {
-      const dayOfWeek = income._id === 1 ? 7 : income._id - 1;
-      incomeArray[dayOfWeek] = income.totalIncome;
-    });
 
+    const incomeArray = new Array(7).fill(0);
+    incomePerDay.forEach((income, i) => {
+      const dayOfWeek = moment().diff( moment(income._id),'days') 
+      incomeArray[incomeArray.length-dayOfWeek-1] = income.totalIncome;
+    });
     res.json(incomeArray);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 
 export{

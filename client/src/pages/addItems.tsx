@@ -37,7 +37,6 @@ const AddItem = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
   } = useForm();
 
   const onFinishHandler = async (data: FieldValues) => {
-    console.log(data);
     const postData = {...data, user}
     try {
         const response = await fetch(`http://localhost:8080/api/v1/management/items`, {
@@ -47,11 +46,10 @@ const AddItem = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
           });
           if (response.ok) {
             const data = await response.json();
-            console.log(JSON.stringify(data));
           }
       onClose();
       reset();
-      window.location.reload();
+      // window.location.reload();
 
     } catch (error) {
       console.log(error);

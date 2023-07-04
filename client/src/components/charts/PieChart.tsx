@@ -22,7 +22,6 @@ const PieChart = ({ title, colors }: PieChartProps) => {
     getTransaction();
   }, [user]);
 
-  console.log(JSON.stringify(myBills));
 
   const obj = myBills && JSON.parse(myBills);
   const mySeries = obj && Object.values(obj);

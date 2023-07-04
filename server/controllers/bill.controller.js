@@ -22,12 +22,10 @@ const getCurrentBillStatement = async(req,res) =>{
 
 const createBillStatement = async(req,res) =>{
 
-    console.log("req body " +    JSON.stringify(req.body))
     try {
     
         const {fiveDollarBills, tenDollarBills, twentyDollarBills, fiftyDollarBills, hundredDollarBills, user} = JSON.stringify(req.body);
 
-        console.log(fiveDollarBills)
          //Start new session for atomic
 
          const session = await mongoose.startSession();
@@ -54,7 +52,6 @@ const createBillStatement = async(req,res) =>{
 
 
         })
-        console.log(newBillTransaction)
 
         //user.allTransactions.push(newTransaction._id);
 

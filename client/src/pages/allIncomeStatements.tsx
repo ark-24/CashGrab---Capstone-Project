@@ -1,9 +1,10 @@
 import { Add } from '@mui/icons-material';
 import { useTable } from '@pankod/refine-core';
-import { Box, DataGrid, GridColDef, Stack, Typography } from '@pankod/refine-mui';
+import { Box, DataGrid, GridColDef, GridValueGetterParams, Stack, Typography } from '@pankod/refine-mui';
 import { CustomButton } from 'components';
 import React, { useEffect, useState } from 'react'
 import CreateIncomeStatement from './createIncomeStatement';
+import moment from 'moment';
 
 const AllIncomeStatements = () => {
     const [open, setOpen] = useState(false);
@@ -49,31 +50,27 @@ const AllIncomeStatements = () => {
         fetchData();
       },[user, open])
       
-    // const allIncomeStatements = data?.data ?? [];
-
-    // console.log(allIncomeStatements);
 
 
 
-    // if (isLoading) return <Typography>Loading ...</Typography>
-    // if (isError) return <Typography>Error ...</Typography>
+
 
     const columns: GridColDef[] = [
-        //{ field: 'id', headerName: 'ID', width: 90 },
         {
             field: 'type',
             headerName: 'Type',
             width: 200,
-            editable: true,
+            editable: false,
             headerAlign: 'center',
             align: 'center',
+            
         },
         {
             field: 'fiveDollarBills',
             headerName: '$5 Bills',
             width: 200,
 
-            editable: true,
+            editable: false,
             headerAlign: 'center',
             align: 'center',
 
@@ -85,7 +82,7 @@ const AllIncomeStatements = () => {
             type: 'number',
             width: 200,
 
-            editable: true,
+            editable: false,
             headerAlign: 'center',
             align: 'center',
 
@@ -98,7 +95,7 @@ const AllIncomeStatements = () => {
             width: 200,
 
 
-            editable: true,
+            editable: false,
             headerAlign: 'center',
             align: 'center',
 
@@ -111,7 +108,7 @@ const AllIncomeStatements = () => {
             width: 200,
 
 
-            editable: true,
+            editable: false,
             headerAlign: 'center',
             align: 'center',
 
@@ -147,6 +144,12 @@ const AllIncomeStatements = () => {
             width: 250,
             headerAlign: 'center',
             align: 'center',
+            valueGetter: (params: GridValueGetterParams) => {
+
+                const utcDate = params.value; // Assuming the date is stored in UTC format
+                const pstDate = moment.utc(utcDate).subtract(7, 'hours');
+                return pstDate.format('YYYY-MM-DD HH:mm:ss'); // Format the date as desired
+              },
 
 
             // valueGetter: (params: GridValueGetterParams) =>

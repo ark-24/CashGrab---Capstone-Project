@@ -1,6 +1,7 @@
 import User from '../mongodb/models/user.js';
 import bcrypt from 'bcryptjs'
 import Jwt  from 'jsonwebtoken';
+import alert from 'alert';
 
 const getUser = async (req,res) => {
     try {
@@ -13,8 +14,18 @@ const getUser = async (req,res) => {
       }
 };
 
+const getAllUser = async (req,res) => {
+  try {
+  
+      const user = await User.find({});
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+};
+
+
 const registerUser = async (req,res) => {
-    console.log("in reg")
 
     try {
         const { name, email,avatar} = req.body;
@@ -22,7 +33,7 @@ const registerUser = async (req,res) => {
 
         const userExists = await User.findOne({email});
 
-        if (userExists) return res.status(200).json(userExists);
+        if (userExists) return res.status(200).json(userExists,{exists: true});
 
         if (password && password !== undefined)
         {
@@ -71,9 +82,9 @@ const loginUser = async (req, res) => {
         },
         secret
       );
-      return res.json({ status: 'ok', user: user });
+      return res.status(200).json({ status: 'ok', user: user, message: "Login Successful" });
     } else {
-      return res.status(401).json({message:'invalid login credentials' });
+      return res.status(500).json({message:'invalid login credentials' });
     }
   };
   
@@ -121,6 +132,7 @@ const getUserInfoByID = async (req,res) => {};
 
 export {
     getUser,
+    getAllUser,
     createUser,
     getUserInfoByID,
     registerUser,

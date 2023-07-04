@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Box,
   Button,
   Dialog,
@@ -37,9 +38,14 @@ const SigninDialog = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
   } = useForm();
   const navigate = useNavigate();
   const { mutate: login } = useLogin<any>();
+  const [errorMsg, setErrorMsg] = useState<String>();
+  const [isErr, setIsErr] = useState<boolean>(false);
+  useEffect(() => {
+    setIsErr(false);
+    reset();
+  }, [onClose]);
 
   const onFinishHandler = async (data: FieldValues) => {
-    console.log(data);
     try {
       // await onFinish({
       //     name: d
@@ -56,27 +62,25 @@ const SigninDialog = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(JSON.stringify(data));
         if (data.user) {
           localStorage.setItem("user", data.user._id);
 
-          //navigate("/");
-        login(logUser);
-
+          login(logUser);
         }
+      } else {
+        response.json().then((data) => setErrorMsg(data.message));
+        setIsErr(true);
       }
-      //   login(response);
-      //   navigate("/transactions");
-      console.log(localStorage.getItem("user"))
-      onClose();
-      reset();
 
+      
     } catch (error) {
       console.log(error);
     }
   };
   return (
     <>
+      {isErr && <Alert severity="error">This is an error message!</Alert>}
+
       <form onSubmit={handleSubmit(onFinishHandler)}>
         <Dialog disablePortal open={isOpen} onClose={onClose}>
           <DialogTitle>Log in</DialogTitle>
@@ -103,6 +107,8 @@ const SigninDialog = ({ isOpen, onClose }: CreateIncomeDialogProps) => {
               sx={{
                 marginTop: "20px",
               }}
+              error={isErr}
+              helperText={isErr && "Invalid Email or Password "}
               autoFocus
               margin="dense"
               id="password"

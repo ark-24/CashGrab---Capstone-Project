@@ -5,26 +5,6 @@ import { CustomButton, PieChart, TotalRevenue } from 'components'
 import { Box, Stack, Typography } from '@pankod/refine-mui'
 const Home = () => {
  
-const  getData = async () => {
-  const response = await fetch(
-    "http://localhost:8080/api/v1/income/week"
-  );
-
-  if (response.ok) {
-    const data = await response.json();
-    console.log(JSON.parse(JSON.stringify(data)));
-  }
-}
-  /**
-   * Update the value shown on the web page when a notification is
-   * received.
-   */
-  
-  /**
-   * Attempts to connect to a Bluetooth device and subscribe to
-   * battery level readings using the battery service.
-   */
-  getData()
 
   
   return (

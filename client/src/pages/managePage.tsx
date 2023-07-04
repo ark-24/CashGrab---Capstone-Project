@@ -189,13 +189,12 @@ const ManagePage = () => {
           },
         }
       );
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
   const handleDeleteItem = () => {
     if (selectedItemRow) {
-      console.log("in delete item");
       
       mutate(
         {
@@ -208,7 +207,7 @@ const ManagePage = () => {
           },
         }
       );
-      window.location.reload();
+      // window.location.reload();
 
 
     }

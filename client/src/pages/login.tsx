@@ -92,9 +92,9 @@ export const Login: React.FC = () => {
           <div>
             <img src="./PaymentPeers-nobg.png" alt="Refine Logo" />
           </div>
-          <Box mt={4}>
+          {/* <Box mt={4}>
             <GoogleButton />
-          </Box>
+          </Box> */}
           <Box mt={4}>
             <CustomButton
               title={"Register"}
