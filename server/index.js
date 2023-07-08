@@ -67,8 +67,8 @@ io.on("connection", (socket) => {
 
 const startServer = async () => {
   try {
-    // connectDb(process.env.MONGODB_URL);
-    connectDb('mongodb://127.0.0.1:27017/CashGrab');
+     connectDb(process.env.MONGODB_URL);
+    //connectDb('mongodb://127.0.0.1:27017/CashGrab');
     // mongoose.connect(
     //   "mongodb://127.0.0.1:27017/CashGrab")
     //   .then((result) => console.log(result))
