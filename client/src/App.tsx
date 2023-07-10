@@ -136,6 +136,17 @@ function App() {
           ReadyPage={ReadyPage}
           catchAll={<ErrorComponent />}
           resources={[
+          
+            {
+              name: "transactions",
+              list: AllTransactions,
+              //create: CreateTransaction,
+              icon: <ReceiptLongIcon />,
+              // edit: MuiInferencer,
+              // show: MuiInferencer,
+              //create: CreateTransaction,
+              // canDelete: true,
+            },
             {
               name: "income",
               list: AllIncomeStatements,
@@ -145,16 +156,6 @@ function App() {
               // edit: MuiInferencer,
               // show: MuiInferencer,
               // create: MuiInferencer,
-              // canDelete: true,
-            },
-            {
-              name: "transactions",
-              list: AllTransactions,
-              //create: CreateTransaction,
-              icon: <ReceiptLongIcon />,
-              // edit: MuiInferencer,
-              // show: MuiInferencer,
-              //create: CreateTransaction,
               // canDelete: true,
             },
             {

@@ -327,6 +327,7 @@ const AllTransactions = () => {
         }
       );
       socket.emit("cancel", "cancelled")
+      window.location.reload()
 
 
     }
