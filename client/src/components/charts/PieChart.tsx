@@ -11,7 +11,7 @@ const PieChart = ({ title, colors }: PieChartProps) => {
   useEffect(() => {
     const getTransaction = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/v1/bills/${user}`);
+        const response = await fetch(`http://127.0.0.1:8080/api/v1/bills/${user}`);
         const data = await response.json();
         setBills(JSON.stringify(data));
       } catch (error) {

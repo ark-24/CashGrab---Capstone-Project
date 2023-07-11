@@ -29,7 +29,7 @@ const AllIncomeStatements = () => {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const response = await fetch(`http://localhost:8080/api/v1/income/${user}`, {
+            const response = await fetch(`http://127.0.0.1:8080/api/v1/income/${user}`, {
               method: "GET",
               headers: { "Content-Type": "application/json" },
             });
@@ -164,12 +164,12 @@ const AllIncomeStatements = () => {
             <Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Typography fontSize={25} fontWeight={700} color="#11142d"> Income </Typography>
 
-                <Box sx={{ justifyContent: "end" }}>
+                {/* <Box sx={{ justifyContent: "end" }}>
                     <CustomButton title="Transfer" handleClick={handleClickOpen} backgroundColor="#D2042D"
                         color="#F3EC0E" icon={<Add />} />
-                </Box>
+                </Box> */}
             </Stack>
-            <CreateIncomeStatement isOpen={open} onClose={handleClose} />
+            {/* <CreateIncomeStatement isOpen={open} onClose={handleClose} /> */}
 
 
             <Box mt="20px" sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, height: '500px' }}>

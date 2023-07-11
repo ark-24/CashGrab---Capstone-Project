@@ -67,7 +67,7 @@ export const Login: React.FC = () => {
     <Box
       component="div"
       sx={{
-        background: `radial-gradient(50% 50% at 50% 50%, #ecc414 0%, #D2042D 100%)`,
+        background: 'white',//`radial-gradient(50% 50% at 50% 50%, #ecc414 0%, #D2042D 100%)`,
         backgroundSize: "cover",
       }}
     >

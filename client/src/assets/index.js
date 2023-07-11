@@ -1,3 +1,3 @@
-import logo from './PaymentPeers-nobg.png';
+import logo from './LogoOutline.png';
 
 export {logo};
