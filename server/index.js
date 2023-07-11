@@ -61,6 +61,10 @@ io.on("connection", (socket) => {
     console.log("transaction data received:", data);
     io.emit("json", data);
   });
+
+  socket.on('cancel',(data=> {
+    io.emit("cancel", data)
+}))
 });
 
 //   socket.emit("result",{state:1, cost:data.price})

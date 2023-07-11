@@ -8,13 +8,12 @@ import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import RegisterDialog from "./register";
 import SigninDialog from "./signin";
+import { logo } from "assets";
 
 export const Login: React.FC = () => {
   const { mutate: login } = useLogin<CredentialResponse>();
   const [registerOpen, setRegisterOpen] = useState(false);
   const [signinOpen, setSigninOpen] = useState(false);
-
-
 
   const GoogleButton = (): JSX.Element => {
     const divRef = useRef<HTMLDivElement>(null);
@@ -48,26 +47,26 @@ export const Login: React.FC = () => {
   };
 
   function handleRegisterOpen(): void {
-    setRegisterOpen(true)
+    setRegisterOpen(true);
   }
 
   const handleRegisterClose = () => {
-    setRegisterOpen(false)
-  }
+    setRegisterOpen(false);
+  };
 
   function handleSigninOpen(): void {
-    setSigninOpen(true)
+    setSigninOpen(true);
   }
 
   const handleSigninClose = () => {
-    setSigninOpen(false)
-  }
+    setSigninOpen(false);
+  };
 
   return (
     <Box
       component="div"
       sx={{
-        background: 'white',//`radial-gradient(50% 50% at 50% 50%, #ecc414 0%, #D2042D 100%)`,
+        background: "white", //`radial-gradient(50% 50% at 50% 50%, #ecc414 0%, #D2042D 100%)`,
         backgroundSize: "cover",
       }}
     >
@@ -90,7 +89,11 @@ export const Login: React.FC = () => {
           }}
         >
           <div>
-            <img src="./PaymentPeers-nobg.png" alt="Refine Logo" />
+            <img
+              src={logo}
+              alt="Payment Peers Logo"
+              style={{ width: "200px", height: "auto" }} // Adjust the width as needed
+            />
           </div>
           {/* <Box mt={4}>
             <GoogleButton />
@@ -118,10 +121,8 @@ export const Login: React.FC = () => {
           </Box>
         </Box>
       </Container>
-    <RegisterDialog  isOpen={registerOpen} onClose={handleRegisterClose} />
-    <SigninDialog  isOpen={signinOpen} onClose={handleSigninClose} />
-
-
+      <RegisterDialog isOpen={registerOpen} onClose={handleRegisterClose} />
+      <SigninDialog isOpen={signinOpen} onClose={handleSigninClose} />
     </Box>
   );
 };
