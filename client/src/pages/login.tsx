@@ -8,6 +8,7 @@ import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import RegisterDialog from "./register";
 import SigninDialog from "./signin";
+import { logo } from "assets";
 
 export const Login: React.FC = () => {
   const { mutate: login } = useLogin<CredentialResponse>();
@@ -90,7 +91,11 @@ export const Login: React.FC = () => {
           }}
         >
           <div>
-            <img src="./PaymentPeers-nobg.png" alt="Refine Logo" />
+          <img
+              src={logo}
+              alt="Payment Peers Logo"
+              style={{ width: "200px", height: "auto" }} // Adjust the width as needed
+            />
           </div>
           {/* <Box mt={4}>
             <GoogleButton />

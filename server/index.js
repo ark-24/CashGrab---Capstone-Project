@@ -56,6 +56,10 @@ io.on("connection", (socket) => {
     io.emit("image", frame);
   });
 
+  socket.on('cancel',(data=> {
+    io.emit("cancel", data)
+}));
+
   socket.on("json", (data) => {
     // Handle the image data received from the Raspberry Pi here
     console.log("transaction data received:", data);
