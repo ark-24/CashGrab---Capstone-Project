@@ -11,5 +11,7 @@ The Solution:
   CashGrab is an automated point-of-sale device that facilitates cash transactions without the need for employees to directly interact with bank notes. CashGrab allows employees to input transactions, prompt customer payment, and automatically facilitates cash payment, detection, and storage. 
 CashGrab also provides an interface for managers to obtain sales and revenue information, and to retrieve stored cash.
 
-View Video Demonstration:                                                         [![Watch the video](https://img.youtube.com/vi/CsshI4wKIHE/1.jpg)](https://www.youtube.com/watch?v=CsshI4wKIHE)
+                                                                                                                                      View Video Demonstration                                                         
+
+[![Watch the video](https://img.youtube.com/vi/CsshI4wKIHE/1.jpg)](https://www.youtube.com/watch?v=CsshI4wKIHE)
 
